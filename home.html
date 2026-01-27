@@ -1,3 +1,57 @@
+<style>
+body{
+  margin:0;
+  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+  background:#f6f7f9;
+  cursor:url("cursor.png"), auto;
+}
+
+h1{
+  font-size:22px;
+  margin-bottom:12px;
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  margin-bottom:16px;
+}
+
+a{
+  text-decoration:none;
+  color:#ff7aa2;
+  font-weight:600;
+}
+</style>
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>260228 OFF会</title>
+
+<style>
+body{
+  background:#f6f7f9;
+  font-family:sans-serif;
+}
+
+.cards a{
+  display:block;
+  padding:16px;
+  background:white;
+  border-radius:14px;
+  margin:14px 0;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  color:#333;
+}
+</style>
+</head>
+
+<body>
 <h1>260228 OFF会</h1>
 <p>大切な案内はこちらから</p>
 
@@ -6,22 +60,13 @@
   <a href="route.html">🚃 経路検索</a>
   <a href="square.html">💬 みんなの広場</a>
   <a href="contact.html">📩 お問い合わせ</a>
-
-  body { font-family: sans-serif; background:#f6f7f9; }
-.cards a {
-  display:block; padding:16px; margin:12px 0;
-  background:white; border-radius:12px;
-  text-decoration:none; color:#333;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
 </div>
+
 <script>
 const pass = prompt("パスワードを入力");
 if(pass !== "260228"){
-  document.body.innerHTML = "閲覧できません";
+  document.body.innerHTML = "<h2>閲覧できません</h2>";
 }
 </script>
-
-body {
- cursor: url("cursor.png"), auto;
-}
+</body>
+</html>
