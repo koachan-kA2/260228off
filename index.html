@@ -1,62 +1,75 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>2/28 オフ会案内</title>
+<meta charset="UTF-8">
+<title>2/28 オフ会管理</title>
 
-  <style>
-    body{
-      font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-      background:#f0f2f5;
-      margin:0;
-      padding:16px;
-    }
-    .container{
-      max-width:600px;
-      margin:40px auto;
-    }
-    h1{
-      text-align:center;
-      margin-bottom:24px;
-    }
-    .card{
-      background:white;
-      border-radius:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      padding:20px;
-      margin-bottom:16px;
-    }
-    .card a{
-      display:block;
-      text-decoration:none;
-      color:#333;
-      font-weight:600;
-    }
-    .card small{
-      color:#777;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+  background:#fafafa;
+}
+
+/* 全体レイアウト */
+.app{
+  display:grid;
+  grid-template-rows:60px 80px 1fr;
+}
+
+/* ヘッダー */
+.header{
+  background:#fff;
+  display:flex;
+  align-items:center;
+  padding:0 16px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+/* 操作バー */
+.toolbar{
+  background:#fff8dc;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:0 16px;
+}
+
+/* メイン */
+.main{
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  gap:16px;
+  padding:16px;
+}
+
+.box{
+  background:white;
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>2/28（土）オフ会案内</h1>
+<div class="app">
 
-    <div class="card">
-      <a href="meetup.html">集合場所・時間<br><small>会場と集合時刻</small></a>
-    </div>
-
-    <div class="card">
-      <a href="route.html">移動経路（個人向け）<br><small>出発地別ルート</small></a>
-    </div>
-
-    <div class="card">
-      <a href="access.html">乗換案内<br><small>電車・路線情報</small></a>
-    </div>
-
-    <div class="card">
-      <a href="info.html">注意事項<br><small>当日のルール</small></a>
-    </div>
+  <div class="header">
+    <strong>オフ会管理画面</strong>
   </div>
+
+  <div class="toolbar">
+    <div>【開催場所】：東京</div>
+    <div>【開催日】：2026年2月28日（土）</div>
+    <button>更新</button>
+  </div>
+
+  <div class="main">
+    <div class="box">左：メンバー・注意</div>
+    <div class="box">右：集合・ルート</div>
+  </div>
+
+</div>
 </body>
 </html>
