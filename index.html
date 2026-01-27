@@ -1,68 +1,62 @@
-<div class="container">
-<!DOCTYPE html><html><head><meta charset="utf-8">
-  <title>2/28 オフ会案内</title></head><body><h1>2/28（土）オフ会案内</h1>
-    <p>参加者向け案内ページです</p><button onclick="location.href='meetup.html'">
-      集合場所・時間</button><br><button onclick="location.href='route.html'">
-  移動経路（個人向け）</button><br><button onclick="location.href='access.html'">
-  乗換案内</button><br><button onclick="location.href='info.html'">
-  注意事項</button></body></html>
-<a href="info.html">
-  <button>集合場所・時間はこちら</button>
-</a>
-<style>
-body{
-  font-family: "Hiragino Sans","Noto Sans JP",sans-serif;
-  background:#f7f7fb;
-  margin:0;
-  padding:0;
-}
-.container{
-  max-width:600px;
-  margin:40px auto;
-  background:white;
-  padding:24px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-}
-h1{
-  text-align:center;
-}
-a button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  background:#6c63ff;
-  color:white;
-  font-size:16px;
-}
-</style>
-<style>
-body {
-  font-family: "Hiragino Sans","Noto Sans JP",sans-serif;
-  background: #f0f2f5;
-  padding: 16px;
-}
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-  margin-bottom: 16px;
-  padding: 20px;
-}
-.card h2 {
-  margin: 0 0 12px;
-}
-.card a {
-  text-decoration: none;
-  color: #3b5998;
-  font-weight: bold;
-}
-</style>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>2/28 オフ会案内</title>
 
-<div class="card"><h2>集合場所・時間</h2><a href="meetup.html">見る</a></div>
-<div class="card"><h2>移動経路（個人向け）</h2><a href="route.html">見る</a></div>
-<div class="card"><h2>乗換案内</h2><a href="access.html">見る</a></div>
-<div class="card"><h2>注意事項</h2><a href="info.html">見る</a></div>
+  <style>
+    body{
+      font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:#f0f2f5;
+      margin:0;
+      padding:16px;
+    }
+    .container{
+      max-width:600px;
+      margin:40px auto;
+    }
+    h1{
+      text-align:center;
+      margin-bottom:24px;
+    }
+    .card{
+      background:white;
+      border-radius:14px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      padding:20px;
+      margin-bottom:16px;
+    }
+    .card a{
+      display:block;
+      text-decoration:none;
+      color:#333;
+      font-weight:600;
+    }
+    .card small{
+      color:#777;
+    }
+  </style>
+</head>
 
-</div>
+<body>
+  <div class="container">
+    <h1>2/28（土）オフ会案内</h1>
+
+    <div class="card">
+      <a href="meetup.html">集合場所・時間<br><small>会場と集合時刻</small></a>
+    </div>
+
+    <div class="card">
+      <a href="route.html">移動経路（個人向け）<br><small>出発地別ルート</small></a>
+    </div>
+
+    <div class="card">
+      <a href="access.html">乗換案内<br><small>電車・路線情報</small></a>
+    </div>
+
+    <div class="card">
+      <a href="info.html">注意事項<br><small>当日のルール</small></a>
+    </div>
+  </div>
+</body>
+</html>
