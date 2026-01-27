@@ -2,79 +2,68 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>2/28 オフ会管理</title>
+<title>2/28 オフ会 管理</title>
 
 <style>
 body{
   margin:0;
   font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:#fafafa;
+  background:#f6f7f9;
+  cursor:url("cursor.png"), auto;
 }
 
-/* 全体レイアウト */
-.app{
-  display:grid;
-  grid-template-rows:60px 80px 1fr;
-}
-
-/* ヘッダー */
 .header{
-  background:#fff;
-  display:flex;
-  align-items:center;
-  padding:0 16px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  background:white;
+  padding:16px;
+  font-size:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
-/* 操作バー */
 .toolbar{
   background:#fff8dc;
+  padding:12px 16px;
   display:flex;
-  align-items:center;
-  gap:16px;
-  padding:0 16px;
+  gap:20px;
+  flex-wrap:wrap;
 }
 
-/* メイン */
 .main{
   display:grid;
-  grid-template-columns:1fr 2fr;
+  grid-template-columns:1fr 1fr;
   gap:16px;
   padding:16px;
 }
 
-.box{
+.card{
   background:white;
-  border-radius:12px;
-  padding:16px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 </style>
 </head>
 
 <body>
-<div class="app">
+<div class="header">🌸 2/28 OFF会 管理画面</div>
 
-  <div class="header">
-    <strong>オフ会管理画面</strong>
+<div class="toolbar">
+  <div>📍 東京</div>
+  <div>📅 2026/2/28（土）</div>
+</div>
+
+<div class="main">
+  <div class="card">
+    <h2>参加者向け</h2>
+    <p><a href="meetup.html">集合場所・時間</a></p>
+    <p><a href="access.html">乗換案内</a></p>
+    <p><a href="info.html">注意事項</a></p>
   </div>
 
-  <div class="toolbar">
-    <div>【開催場所】：東京</div>
-    <div>【開催日】：2026年2月28日（土）</div>
-    <button>更新</button>
+  <div class="card">
+    <h2>管理・共有</h2>
+    <p><a href="route.html">個人ルート</a></p>
+    <p><a href="square.html">みんなの広場</a></p>
   </div>
-
-  <div class="main">
-    <div class="box">左：メンバー・注意</div>
-    <div class="box">右：集合・ルート</div>
-  </div>
-
-  body {
- cursor: url("cursor.png"), auto;
-}
-
-
 </div>
 </body>
 </html>
