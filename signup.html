@@ -2,28 +2,57 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>新規登録</title>
+  <title>新規登録｜260228 OFF会</title>
+  <style>
+    body{
+      font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+      background:#f6f7f9;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+    .card{
+      background:#fff;
+      padding:24px;
+      border-radius:16px;
+      width:320px;
+      box-shadow:0 10px 30px rgba(0,0,0,.1);
+    }
+    h2{ text-align:center; }
+    input,button{
+      width:100%;
+      padding:12px;
+      margin-top:12px;
+      border-radius:8px;
+      border:1px solid #ddd;
+    }
+    button{
+      background:#6c63ff;
+      color:white;
+      border:none;
+      font-weight:bold;
+    }
+    a{ display:block; text-align:center; margin-top:12px; }
+  </style>
 </head>
 
 <body>
+<div class="card">
+  <h2>新規登録</h2>
 
-<h2>新規登録</h2>
+  <form id="signupForm">
+    <input type="email" id="email" placeholder="メールアドレス" required>
+    <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
+    <button type="submit">登録する</button>
+  </form>
 
-<form id="signupForm">
-  <input type="email" id="email" placeholder="koadayo.h4@gmail.com" required>
-  <br>
-  <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
-  <br>
-  <button type="submit">登録する</button>
-</form>
-
-<p>
   <a href="login.html">ログインはこちら</a>
-</p>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } 
+  import { getAuth, createUserWithEmailAndPassword, sendEmailVerification }
     from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -38,20 +67,20 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  document.getElementById("signupForm").addEventListener("submit", (e) => {
+  document.getElementById("signupForm").addEventListener("submit", e => {
     e.preventDefault();
 
-    createUserWithEmailAndPassword(auth, email.value, password.value)
-      .then((userCredential) => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
         sendEmailVerification(userCredential.user);
-        alert("確認メールを送信しました。メールを確認してください！");
+        alert("確認メールを送信しました📩");
         location.href = "login.html";
       })
-      .catch(error => {
-        alert("登録失敗：" + error.message);
-      });
+      .catch(err => alert(err.message));
   });
 </script>
-
 </body>
 </html>
