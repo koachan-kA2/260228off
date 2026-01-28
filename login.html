@@ -1,82 +1,59 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>ログイン｜260228 OFF会</title>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-<style>
-body{
-  font-family:"Noto Sans JP",sans-serif;
-  background:#f6f7f9;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.box{
-  background:white;
-  padding:32px;
-  border-radius:16px;
-  width:320px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border-radius:10px;
-}
-button{
-  background:#6c63ff;
-  color:white;
-  border:none;
-}
-a{ font-size:12px; display:block; margin-top:10px; }
-</style>
+  <meta charset="UTF-8">
+  <title>ログイン</title>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>ログイン</h2>
-  <input id="email" placeholder="メールアドレス">
-  <input id="password" type="password" placeholder="パスワード">
-  <button onclick="login()">ログイン</button>
-  <button onclick="signup()">新規登録</button>
-  <a href="#" onclick="reset()">パスワード忘れた？</a>
-</div>
+<h2>Log in</h2>
 
-<script>
-const firebaseConfig = {
-  apiKey: "ここに入れる",
-  authDomain: "ここに入れる",
-  projectId: "offline-meet-up"
-};
+<form id="loginForm">
+  <input type="email" id="email" placeholder="メールアドレス" required>
+  <br>
+  <input type="password" id="password" placeholder="パスワード" required>
+  <br>
+  <button type="submit">ログイン</button>
+</form>
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+<p>
+  <a href="reset.html">パスワード忘れちゃった方はこちら</a>
+</p>
 
-function signup(){
-  auth.createUserWithEmailAndPassword(email.value, password.value)
-    .then(()=>alert("登録完了"))
-    .catch(e=>alert(e.message));
-}
+<!-- 🔽ここから追加（Firebase） -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-function login(){
-  auth.signInWithEmailAndPassword(email.value, password.value)
-    .then(()=>location.href="home.html")
-    .catch(e=>alert(e.message));
-}
+  const firebaseConfig = {
+    apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
+    authDomain: "offline-meet-up.firebaseapp.com",
+    projectId: "offline-meet-up",
+    storageBucket: "offline-meet-up.firebasestorage.app",
+    messagingSenderId: "834362010778",
+    appId: "1:834362010778:web:4af33334a26024f3cfc323"
+  };
 
-function reset(){
-  auth.sendPasswordResetEmail(email.value)
-    .then(()=>alert("再設定メール送信"))
-    .catch(e=>alert(e.message));
-}
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    signInWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    )
+    .then(() => {
+      location.href = "index.html";
+    })
+    .catch(error => {
+      alert("ログイン失敗：" + error.message);
+    });
+  });
 </script>
+<!-- 🔼ここまで -->
 
 </body>
 </html>
