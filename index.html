@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>オフ会参加ページ</title>
 </head>
+
 <body>
 
 <h2>オフ会参加フォーム</h2>
@@ -18,93 +19,70 @@
 <button id="logoutBtn">ログアウト</button>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
-    authDomain: "offline-meet-up.firebaseapp.com",
-    projectId: "offline-meet-up",
-    storageBucket: "offline-meet-up.firebasestorage.app",
-    messagingSenderId: "834362010778",
-    appId: "1:834362010778:web:4af33334a26024f3cfc323",
-    measurementId: "G-BX7SWWG5T5"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
+  authDomain: "offline-meet-up.firebaseapp.com",
+  projectId: "offline-meet-up",
+  storageBucket: "offline-meet-up.firebasestorage.app",
+  messagingSenderId: "834362010778",
+  appId: "1:834362010778:web:4af33334a26024f3cfc323",
+  measurementId: "G-BX7SWWG5T5"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+getAnalytics(app);
 
-  // 🔒 ログインチェック
-  onAuthStateChanged(auth, (user) => {
-    if (!user || !user.emailVerified) {
-      location.href = "login.html";
-    }
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ログインチェック
+onAuthStateChanged(auth, (user) => {
+  if (!user || !user.emailVerified) location.href = "login.html";
+});
+
+// ログアウト
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  location.href = "login.html";
+};
+
+// フォーム送信
+document.getElementById("joinForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("name").value.trim();
+  const people = Number(document.getElementById("people").value);
+  if (!name || people < 1) return alert("正しく入力してね");
+
+  await addDoc(collection(db, "participants"), {
+    name,
+    people,
+    timestamp: serverTimestamp(),
+    userId: auth.currentUser.uid
   });
 
-  // 🚪 ログアウト
-  document.getElementById("logoutBtn").onclick = async () => {
-    await signOut(auth);
-    location.href = "login.html";
-  };
-
-  // 📝 フォーム送信
-  document.getElementById("joinForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = document.getElementById("name").value.trim();
-    const people = parseInt(document.getElementById("people").value);
-
-    if (!name || people < 1) return alert("正しく入力してください");
-
-    try {
-      await addDoc(collection(db, "participants"), {
-        name,
-        people,
-        timestamp: serverTimestamp(),
-        userId: auth.currentUser.uid
-      });
-      alert("参加登録完了！楽しみにしててね✨");
-      document.getElementById("joinForm").reset();
-    } catch (err) {
-      console.error(err);
-      alert("登録に失敗しました💦もう一度やってみて");
-    }
-  });
+  alert("参加登録完了✨");
+  e.target.reset();
+});
 </script>
 
+<!-- tawk.to chat（1回だけ！） -->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-s1.src='https://embed.tawk.to/xxxxxxxx/default';
+s1.src='https://embed.tawk.to/【6979b443f957841983b37d8b/1jg1mgaaa
+】/default';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 
-<!-- ここまでサイトの内容 -->
-
-<!-- tawk.to chat -->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/あなたのID/default';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-
-</body>
-</html>
-
-  
 </body>
 </html>
