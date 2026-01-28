@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>パスワード再設定</title>
+<style>
+body{
+  font-family:sans-serif;
+  background:#f6f7f9;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card{
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  width:320px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+}
+button{ background:#6c63ff; color:white; border:none; }
+</style>
+</head>
+
+<body>
+<div class="card">
+<h2>パスワード再設定</h2>
+<input type="email" id="email" placeholder="登録メール">
+<button id="resetBtn">再設定メール送信</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, sendPasswordResetEmail }
+  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
+  authDomain: "offline-meet-up.firebaseapp.com",
+  projectId: "offline-meet-up",
+  storageBucket: "offline-meet-up.firebasestorage.app",
+  messagingSenderId: "834362010778",
+  appId: "1:834362010778:web:4af33334a26024f3cfc323"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+resetBtn.onclick = () => {
+  sendPasswordResetEmail(auth, email.value)
+    .then(()=>alert("再設定メール送信済み📩"))
+    .catch(e=>alert(e.message));
+};
+</script>
+</body>
+</html>
