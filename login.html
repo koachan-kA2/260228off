@@ -1,10 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン</title>
+</head>
+<body>
+
+<h2>ログイン</h2>
+
+<input type="email" id="email" placeholder="メールアドレス">
+<br>
+<input type="password" id="password" placeholder="パスワード">
+<br><br>
+
+<button id="loginBtn">ログイン</button>
+
+<div style="margin-top:16px; text-align:center;">
+  <a href="signup.html">新規登録はこちら</a><br>
+  <a href="reset.html">パスワード忘れた方</a>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
@@ -28,17 +46,16 @@ loginBtn.onclick = async () => {
 
     if (!result.user.emailVerified) {
       await signOut(auth);
-      alert("メール確認が完了していません📩\n確認メールをチェックしてください");
+      alert("メール確認が完了していません📩\n確認メールをチェックしてね");
       return;
     }
 
     location.href = "index.html";
   } catch (e) {
-    if (e.code === "auth/wrong-password" || e.code === "auth/user-not-found") {
-      alert("メールアドレスかパスワードが違います");
-    } else {
-      alert(e.message);
-    }
+    alert("メールアドレスかパスワードが違います");
   }
 };
 </script>
+
+</body>
+</html>
