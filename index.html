@@ -2,68 +2,56 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>2/28 オフ会 管理</title>
-
+<title>260228 OFF会 HOME</title>
 <style>
 body{
-  margin:0;
   font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:#f6f7f9;
-  cursor:url("cursor.png"), auto;
+  background:#fafafa;
+  padding:24px;
 }
-
-.header{
+.cards a{
+  display:block;
   background:white;
-  padding:16px;
-  font-size:18px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-
-.toolbar{
-  background:#fff8dc;
-  padding:12px 16px;
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-.main{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-  padding:16px;
-}
-
-.card{
-  background:white;
+  padding:20px;
+  margin-bottom:16px;
   border-radius:16px;
-  padding:18px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+  text-decoration:none;
+  color:#333;
 }
 </style>
 </head>
 
 <body>
-<div class="header">🌸 2/28 OFF会 管理画面</div>
+<h1>260228 OFF会</h1>
 
-<div class="toolbar">
-  <div>📍 東京</div>
-  <div>📅 2026/2/28（土）</div>
+<div class="cards">
+  <a href="info.html">📢 全体案内</a>
+  <a href="route.html">🚃 経路検索</a>
+  <a href="square.html">💬 みんなの広場</a>
+  <a href="contact.html">📩 お問い合わせ</a>
 </div>
 
-<div class="main">
-  <div class="card">
-    <h2>参加者向け</h2>
-    <p><a href="meetup.html">集合場所・時間</a></p>
-    <p><a href="access.html">乗換案内</a></p>
-    <p><a href="info.html">注意事項</a></p>
-  </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-  <div class="card">
-    <h2>管理・共有</h2>
-    <p><a href="route.html">個人ルート</a></p>
-    <p><a href="square.html">みんなの広場</a></p>
-  </div>
-</div>
+const firebaseConfig = {
+  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
+  authDomain: "offline-meet-up.firebaseapp.com",
+  projectId: "offline-meet-up",
+  storageBucket: "offline-meet-up.firebasestorage.app",
+  messagingSenderId: "834362010778",
+  appId: "1:834362010778:web:4af33334a26024f3cfc323"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, user=>{
+  if(!user) location.href="login.html";
+});
+</script>
 </body>
 </html>
