@@ -11,13 +11,26 @@
 <p>ログインしている人だけ参加できます✨</p>
 
 <form id="joinForm">
-  <label>名前: <input type="text" id="name" required></label><br><br>
-  <label>参加人数: <input type="number" id="people" min="1" value="1" required></label><br><br>
+  <label>
+    名前:
+    <input type="text" id="name" required>
+  </label>
+  <br><br>
+
+  <label>
+    参加人数:
+    <input type="number" id="people" min="1" value="1" required>
+  </label>
+  <br><br>
+
   <button type="submit">参加する</button>
 </form>
 
+<br>
+
 <button id="logoutBtn">ログアウト</button>
 
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
@@ -40,23 +53,30 @@ getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ログインチェック
+// 🔒 ログインチェック
 onAuthStateChanged(auth, (user) => {
-  if (!user || !user.emailVerified) location.href = "login.html";
+  if (!user || !user.emailVerified) {
+    location.href = "login.html";
+  }
 });
 
-// ログアウト
+// 🚪 ログアウト
 document.getElementById("logoutBtn").onclick = async () => {
   await signOut(auth);
   location.href = "login.html";
 };
 
-// フォーム送信
+// 📝 参加フォーム送信
 document.getElementById("joinForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const name = document.getElementById("name").value.trim();
   const people = Number(document.getElementById("people").value);
-  if (!name || people < 1) return alert("正しく入力してね");
+
+  if (!name || people < 1) {
+    alert("正しく入力してね");
+    return;
+  }
 
   await addDoc(collection(db, "participants"), {
     name,
@@ -70,14 +90,13 @@ document.getElementById("joinForm").addEventListener("submit", async (e) => {
 });
 </script>
 
-<!-- tawk.to chat（1回だけ！） -->
+<!-- tawk.to chat（1回だけ・正しいID） -->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-s1.src='https://embed.tawk.to/【6979b443f957841983b37d8b/1jg1mgaaa
-】/default';
+s1.src='https://embed.tawk.to/6979b443f957841983b37d8b/1jg1mgaaa';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
