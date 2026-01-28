@@ -1,54 +1,10 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>ログイン｜260228 OFF会</title>
-<style>
-body{
-  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:#f6f7f9;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.card{
-  background:white;
-  padding:24px;
-  border-radius:16px;
-  width:320px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border-radius:8px;
-}
-button{
-  background:#6c63ff;
-  color:white;
-  border:none;
-}
-a{ display:block; text-align:center; margin-top:10px; }
-</style>
-</head>
-
-<body>
-<div class="card">
-<h2>ログイン</h2>
-
-<input type="email" id="email" placeholder="メールアドレス">
-<input type="password" id="password" placeholder="パスワード">
-<button id="loginBtn">ログイン</button>
-
-<a href="reset.html">パスワード忘れた方</a>
-</div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword }
-  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
@@ -62,15 +18,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-document.getElementById("loginBtn").onclick = () => {
-  signInWithEmailAndPassword(
-    auth,
-    email.value,
-    password.value
-  ).then(() => {
+loginBtn.onclick = async () => {
+  try {
+    const result = await signInWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+
+    if (!result.user.emailVerified) {
+      await signOut(auth);
+      alert("メール確認が完了していません📩\n確認メールをチェックしてください");
+      return;
+    }
+
     location.href = "index.html";
-  }).catch(err => alert(err.message));
+  } catch (e) {
+    if (e.code === "auth/wrong-password" || e.code === "auth/user-not-found") {
+      alert("メールアドレスかパスワードが違います");
+    } else {
+      alert(e.message);
+    }
+  }
 };
 </script>
-</body>
-</html>
