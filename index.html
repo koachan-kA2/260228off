@@ -2,22 +2,27 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>トップページ</title>
+  <title>オフ会参加ページ</title>
 </head>
 <body>
 
-<h2>ログイン後トップページ</h2>
-<p>ようこそ！ログイン成功してる人だけ見えてます✨</p>
+<h2>オフ会参加フォーム</h2>
+<p>ログインしている人だけ参加できます✨</p>
+
+<form id="joinForm">
+  <label>名前: <input type="text" id="name" required></label><br><br>
+  <label>参加人数: <input type="number" id="people" min="1" value="1" required></label><br><br>
+  <button type="submit">参加する</button>
+</form>
 
 <button id="logoutBtn">ログアウト</button>
 
 <script type="module">
-  // Firebase AppとAuth、Analyticsをまとめて読み込む
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  // Firebase設定（コピー済み）
   const firebaseConfig = {
     apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
     authDomain: "offline-meet-up.firebaseapp.com",
@@ -28,10 +33,10 @@
     measurementId: "G-BX7SWWG5T5"
   };
 
-  // Firebase初期化
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
   // 🔒 ログインチェック
   onAuthStateChanged(auth, (user) => {
@@ -45,6 +50,29 @@
     await signOut(auth);
     location.href = "login.html";
   };
+
+  // 📝 フォーム送信
+  document.getElementById("joinForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const people = parseInt(document.getElementById("people").value);
+
+    if (!name || people < 1) return alert("正しく入力してください");
+
+    try {
+      await addDoc(collection(db, "participants"), {
+        name,
+        people,
+        timestamp: serverTimestamp(),
+        userId: auth.currentUser.uid
+      });
+      alert("参加登録完了！楽しみにしててね✨");
+      document.getElementById("joinForm").reset();
+    } catch (err) {
+      console.error(err);
+      alert("登録に失敗しました💦もう一度やってみて");
+    }
+  });
 </script>
 
 </body>
