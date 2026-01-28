@@ -1,41 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>260228 OFF会 HOME</title>
-<style>
-body{
-  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:#fafafa;
-  padding:24px;
-}
-.cards a{
-  display:block;
-  background:white;
-  padding:20px;
-  margin-bottom:16px;
-  border-radius:16px;
-  box-shadow:0 6px 20px rgba(0,0,0,.1);
-  text-decoration:none;
-  color:#333;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>トップページ</title>
 </head>
-
 <body>
-<h1>260228 OFF会</h1>
 
-<div class="cards">
-  <a href="info.html">📢 全体案内</a>
-  <a href="route.html">🚃 経路検索</a>
-  <a href="square.html">💬 みんなの広場</a>
-  <a href="contact.html">📩 お問い合わせ</a>
-</div>
+<h2>ログイン後トップページ</h2>
+<p>ようこそ！ログイン成功してる人だけ見えてます✨</p>
+
+<button id="logoutBtn">ログアウト</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
@@ -49,9 +31,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, user=>{
-  if(!user) location.href="login.html";
+// 🔒 ログインチェック
+onAuthStateChanged(auth, (user) => {
+  if (!user || !user.emailVerified) {
+    location.href = "login.html";
+  }
 });
+
+// 🚪 ログアウト
+logoutBtn.onclick = async () => {
+  await signOut(auth);
+  location.href = "login.html";
+};
 </script>
+
 </body>
 </html>
