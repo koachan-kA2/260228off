@@ -12,37 +12,39 @@
 <button id="logoutBtn">ログアウト</button>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  // Firebase AppとAuth、Analyticsをまとめて読み込む
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
-  authDomain: "offline-meet-up.firebaseapp.com",
-  projectId: "offline-meet-up",
-  storageBucket: "offline-meet-up.firebasestorage.app",
-  messagingSenderId: "834362010778",
-  appId: "1:834362010778:web:4af33334a26024f3cfc323"
-};
+  // Firebase設定（コピー済み）
+  const firebaseConfig = {
+    apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
+    authDomain: "offline-meet-up.firebaseapp.com",
+    projectId: "offline-meet-up",
+    storageBucket: "offline-meet-up.firebasestorage.app",
+    messagingSenderId: "834362010778",
+    appId: "1:834362010778:web:4af33334a26024f3cfc323",
+    measurementId: "G-BX7SWWG5T5"
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+  // Firebase初期化
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
 
-// 🔒 ログインチェック
-onAuthStateChanged(auth, (user) => {
-  if (!user || !user.emailVerified) {
+  // 🔒 ログインチェック
+  onAuthStateChanged(auth, (user) => {
+    if (!user || !user.emailVerified) {
+      location.href = "login.html";
+    }
+  });
+
+  // 🚪 ログアウト
+  document.getElementById("logoutBtn").onclick = async () => {
+    await signOut(auth);
     location.href = "login.html";
-  }
-});
-
-// 🚪 ログアウト
-logoutBtn.onclick = async () => {
-  await signOut(auth);
-  location.href = "login.html";
-};
+  };
 </script>
 
 </body>
