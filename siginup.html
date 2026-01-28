@@ -4,20 +4,19 @@
   <meta charset="UTF-8">
   <title>新規登録</title>
 </head>
+
 <body>
 
 <h2>新規登録</h2>
 
-<input type="email" id="email" placeholder="メールアドレス">
-<br>
-<input type="password" id="password" placeholder="パスワード（6文字以上）">
-<br><br>
+<input type="email" id="email" placeholder="メールアドレス" required><br><br>
+<input type="password" id="password" placeholder="パスワード（6文字以上）" required><br><br>
 
 <button id="signupBtn">登録する</button>
 
-<div style="margin-top:16px; text-align:center;">
+<p style="margin-top:16px;">
   <a href="login.html">ログインはこちら</a>
-</div>
+</p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
@@ -49,14 +48,14 @@ signupBtn.onclick = async () => {
 
     await sendEmailVerification(result.user);
 
-    alert("登録完了！📩\n確認メールを送ったからチェックしてね");
+    alert("確認メールを送信しました📩\nメールを確認してからログインしてください！");
     location.href = "login.html";
 
   } catch (e) {
-    if (e.code === "auth/weak-password") {
+    if (e.code === "auth/email-already-in-use") {
+      alert("このメールアドレスは既に登録されています");
+    } else if (e.code === "auth/weak-password") {
       alert("パスワードは6文字以上にしてね");
-    } else if (e.code === "auth/email-already-in-use") {
-      alert("このメールアドレスは既に使われてるよ！別のメールアドレスを入力してね🥺");
     } else {
       alert(e.message);
     }
