@@ -58,4 +58,23 @@ loginBtn.onclick = async () => {
 </script>
 
 </body>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = { ★同じ設定★ };
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+loginForm.onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    location.href = "join.html";
+  } catch (e) {
+    alert(e.code);
+  }
+};
+</script>
 </html>
