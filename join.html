@@ -1,0 +1,8 @@
+<!-- Firebase authチェック -->
+<script type="module">
+onAuthStateChanged(auth, (user) => {
+  if (!user || !user.emailVerified) {
+    location.href = "login.html";
+  }
+});
+</script>
