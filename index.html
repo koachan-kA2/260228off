@@ -136,5 +136,11 @@ var Tawk_API=Tawk_API||{},Tawk_LoadStart=new Date();
 </script>
 
 </body>
+  onAuthStateChanged(auth, (user) => {
+  if (!user || !user.emailVerified) {
+    alert("メール認証が必要だよ！");
+    location.href = "login.html";
+  }
+});
 </html>
 </html>
