@@ -67,5 +67,42 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
 });
 </script>
 
+<form id="registerForm">
+  <input type="email" id="email" placeholder="メールアドレス" required>
+  <input type="password" id="password" placeholder="パスワード（6文字以上）" required>
+  <button type="submit">登録</button>
+</form>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
+  authDomain: "offline-meet-up.firebaseapp.com",
+  projectId: "offline-meet-up",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = email.value;
+  const password = password.value;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCredential.user);
+    alert("登録完了！確認メールを送ったよ📩");
+    location.href = "login.html";
+  } catch (error) {
+    alert(error.code);
+  }
+});
+</script>
+
+
 });
 </script>
