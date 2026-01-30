@@ -10,16 +10,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// ログインチェック
-onAuthStateChanged(auth, (user) => {
-  if (!user || !user.emailVerified) {
-    location.href = "login.html";
-  } else {
-    document.getElementById("userEmail").textContent = user.email;
-  }
+onAuthStateChanged(auth, user => {
+  if (!user || !user.emailVerified) location.href = "login.html";
+  else document.getElementById("userEmail").textContent = user.email;
 });
 
-// ログアウト
 document.getElementById("logoutBtn").onclick = async () => {
   await signOut(auth);
   location.href = "login.html";
