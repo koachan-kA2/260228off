@@ -2,21 +2,19 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>新規登録</title>
-
-  <!-- reCAPTCHA -->
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ld_x1ksAAAAALYY2W8Tv_TbGnuRNc49eDfLvRCK"></script>
+  <title>新規登録｜OMS</title>
 </head>
 <body>
 
-<h2>新規登録</h2>
+<h2>新規ユーザー登録</h2>
 
-<input type="email" id="email" placeholder="メールアドレス" required><br><br>
-<input type="password" id="password" placeholder="パスワード（6文字以上）" required><br><br>
+<form id="registerForm">
+  <input type="email" id="email" placeholder="メールアドレス" required><br><br>
+  <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br><br>
+  <button type="submit">登録</button>
+</form>
 
-<button id="registerBtn">登録</button>
-
-<p style="margin-top:12px;">
+<p>
   <a href="login.html">ログインはこちら</a>
 </p>
 
@@ -28,44 +26,29 @@ const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
   authDomain: "offline-meet-up.firebaseapp.com",
   projectId: "offline-meet-up",
-  storageBucket: "offline-meet-up.firebasestorage.app",
-  messagingSenderId: "834362010778",
-  appId: "1:834362010778:web:4af33334a26024f3cfc323"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-registerBtn.onclick = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  if (!email || !password) {
-    alert("全部入力してね");
-    return;
-  }
-
-  // 🔐 reCAPTCHA 実行
-  const token = await grecaptcha.enterprise.execute(
-    "6Ld_x1ksAAAAALYY2W8Tv_TbGnuRNc49eDfLvRCK",
-    { action: "SIGNUP" }
-  );
-
-  if (!token) {
-    alert("reCAPTCHAに失敗したよ💦");
-    return;
-  }
+registerForm.onsubmit = async (e) => {
+  e.preventDefault();
 
   try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const userCred = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+
     await sendEmailVerification(userCred.user);
 
-    alert("登録完了！確認メールを送ったよ📩");
+    alert("登録完了！\n確認メールを送ったよ📩\nメール確認後にログインしてね！");
     location.href = "login.html";
 
   } catch (err) {
     if (err.code === "auth/email-already-in-use") {
-      alert("このメールは既に登録されてるよ。ログインしてね！");
+      alert("このメールは既に登録されています。\nログインしてね！");
     } else {
       alert(err.message);
     }
