@@ -1,22 +1,6 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>新規登録｜OMS</title>
-</head>
-<body>
-
-<h2>新規ユーザー登録</h2>
-
-<form id="registerForm">
-  <input type="email" id="email" placeholder="メールアドレス" required><br><br>
-  <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br><br>
-  <button type="submit">登録</button>
-</form>
-
-<p>
-  <a href="login.html">ログインはこちら</a>
-</p>
+<input id="email" type="email" placeholder="メールアドレス">
+<input id="password" type="password" placeholder="パスワード">
+<button id="signupBtn">登録</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
@@ -31,30 +15,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-registerForm.onsubmit = async (e) => {
-  e.preventDefault();
-
+signupBtn.onclick = async () => {
   try {
-    const userCred = await createUserWithEmailAndPassword(
+    const userCredential = await createUserWithEmailAndPassword(
       auth,
       email.value,
       password.value
     );
 
-    await sendEmailVerification(userCred.user);
+    await sendEmailVerification(userCredential.user);
 
-    alert("登録完了！\n確認メールを送ったよ📩\nメール確認後にログインしてね！");
+    alert("確認メールを送信しました📩\nメールを確認してからログインしてね！");
     location.href = "login.html";
 
-  } catch (err) {
-    if (err.code === "auth/email-already-in-use") {
-      alert("このメールは既に登録されています。\nログインしてね！");
+  } catch (e) {
+    if (e.code === "auth/email-already-in-use") {
+      alert("このメールアドレスは既に登録されています！");
     } else {
-      alert(err.message);
+      alert("登録エラー：" + e.message);
     }
   }
 };
 </script>
-
-</body>
-</html>
