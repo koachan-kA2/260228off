@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2.28 オフ会 - JR経路検索</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Shippori+Mincho:wght@600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to bottom right, #fff7ed, #fef3c7, #fce7f3);
+            min-height: 100vh;
+        }
+        
+        .heading-font {
+            font-family: 'Shippori Mincho', serif;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes bounce-in {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes slide-in-left {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .bounce-in {
+            animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .slide-in-left {
+            animation: slide-in-left 0.5s ease-out forwards;
+        }
+        
+        .ticket-card {
+            background: linear-gradient(135deg, #fff 0%, #fefefe 100%);
+            border: 3px dashed #ff6b9d;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ticket-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b9d, #ffd93d, #6bcf7f, #4d96ff);
+            z-index: -1;
+            border-radius: 1rem;
+            opacity: 0.3;
+        }
+        
+        .tab-button {
+            transition: all 0.3s;
+            position: relative;
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #4b5563;
+        }
+        
+        .tab-button:hover {
+            background: #f9fafb;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(to right, #fce7f3, #fed7aa);
+            color: #be185d;
+        }
+        
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, #ff6b9d, #ffd93d);
+            border-radius: 3px;
+        }
+        
+        .route-line-segment {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .route-line-segment::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #4d96ff, #6bcf7f);
+        }
+        
+        .route-line-segment::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 11px;
+            height: 11px;
+            background: white;
+            border: 3px solid #4d96ff;
+            border-radius: 50%;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 3px solid #fbcfe8;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            background: white;
+            font-size: 1rem;
+        }
+        
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.2);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .badge {
+            display: inline-block;
+            position: absolute;
+            top: -0.25rem;
+            right: -0.25rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // 関東のJR主要駅データ
+        const JR_STATIONS = {
+            '山手線': ['東京', '有楽町', '新橋', '浜松町', '田町', '品川', '大崎', '五反田', '目黒', '恵比寿', '渋谷', '原宿', '代々木', '新宿', '新大久保', '高田馬場', '目白', '池袋', '大塚', '巣鴨', '駒込', '田端', '西日暮里', '日暮里', '鶯谷', '上野', '御徒町', '秋葉原', '神田'],
+            '中央線': ['東京', '神田', '御茶ノ水', '水道橋', '飯田橋', '市ヶ谷', '四ツ谷', '信濃町', '千駄ケ谷', '代々木', '新宿', '大久保', '東中野', '中野', '高円寺', '阿佐ヶ谷', '荻窪', '西荻窪', '吉祥寺', '三鷹', '武蔵境', '東小金井', '武蔵小金井', '国分寺', '西国分寺', '国立', '立川', '日野', '豊田', '八王子'],
+            '総武線': ['東京', '新日本橋', '馬喰町', '錦糸町', '亀戸', '平井', '新小岩', '小岩', '市川', '本八幡', '下総中山', '西船橋', '船橋', '東船橋', '津田沼', '幕張本郷', '幕張', '新検見川', '稲毛', '西千葉', '千葉'],
+            '京浜東北線': ['大宮', 'さいたま新都心', '与野', '北浦和', '浦和', '南浦和', '蕨', '西川口', '川口', '赤羽', '東十条', '王子', '上中里', '田端', '西日暮里', '日暮里', '鶯谷', '上野', '御徒町', '秋葉原', '神田', '東京', '有楽町', '新橋', '浜松町', '田町', '高輪ゲートウェイ', '品川', '大井町', '大森', '蒲田', '川崎', '鶴見', '新子安', '東神奈川', '横浜', '桜木町', '関内', '石川町', '山手', '根岸', '磯子', '新杉田', '洋光台', '港南台', '本郷台', '大船'],
+            '埼京線': ['大宮', 'さいたま新都心', '与野本町', '北戸田', '戸田公園', '戸田', '浮間舟渡', '北赤羽', '赤羽', '十条', '板橋', '池袋', '新宿', '渋谷', '恵比寿', '大崎'],
+            '湘南新宿ライン': ['大宮', 'さいたま新都心', '浦和', '武蔵浦和', '戸田公園', '赤羽', '池袋', '新宿', '渋谷', '恵比寿', '大崎', '武蔵小杉', '横浜', '戸塚', '大船', '藤沢', '辻堂', '茅ヶ崎', '平塚', '国府津', '小田原'],
+            '横須賀線': ['東京', '新橋', '品川', '西大井', '武蔵小杉', '新川崎', '横浜', '保土ケ谷', '東戸塚', '戸塚', '大船', '北鎌倉', '鎌倉', '逗子', '東逗子', '田浦', '横須賀', '衣笠', '久里浜'],
+            '常磐線': ['上野', '日暮里', '三河島', '南千住', '北千住', '松戸', '柏', '我孫子', '取手'],
+        };
+
+        const ALL_STATIONS = [...new Set(Object.values(JR_STATIONS).flat())].sort();
+
+        const PRESET_ROUTES = [
+            { name: '京都→東京（新幹線到着）', from: '東京', to: '東京', description: '友達をお迎え' },
+            { name: '東京→池袋（集合場所へ）', from: '東京', to: '池袋', description: '集合場所まで' },
+            { name: '池袋→原宿（オフ会会場へ）', from: '池袋', to: '原宿', description: 'オフ会会場まで' },
+        ];
+
+        const calculateFare = (distance) => {
+            if (distance <= 3) return 150;
+            if (distance <= 6) return 170;
+            if (distance <= 10) return 200;
+            if (distance <= 15) return 220;
+            if (distance <= 20) return 240;
+            if (distance <= 25) return 270;
+            if (distance <= 30) return 310;
+            if (distance <= 35) return 350;
+            return 350 + Math.floor((distance - 35) / 5) * 40;
+        };
+
+        const calculateRoute = (from, to) => {
+            if (from === to) return null;
+
+            // 直通路線を探す
+            for (const [lineName, stations] of Object.entries(JR_STATIONS)) {
+                const fromIndex = stations.indexOf(from);
+                const toIndex = stations.indexOf(to);
+                
+                if (fromIndex !== -1 && toIndex !== -1) {
+                    const stationsBetween = fromIndex < toIndex 
+                        ? stations.slice(fromIndex, toIndex + 1)
+                        : stations.slice(toIndex, fromIndex + 1).reverse();
+                    
+                    const distance = Math.abs(toIndex - fromIndex);
+                    const fare = calculateFare(distance);
+                    const time = 3 + distance * 2.5;
+                    
+                    return {
+                        line: lineName,
+                        stations: stationsBetween,
+                        distance,
+                        fare,
+                        time: Math.round(time),
+                        transfers: 0,
+                        route: [{ line: lineName, stations: stationsBetween }]
+                    };
+                }
+            }
+            
+            // 1回乗り換え経路を探す
+            for (const [line1Name, line1Stations] of Object.entries(JR_STATIONS)) {
+                const fromIndex = line1Stations.indexOf(from);
+                if (fromIndex === -1) continue;
+
+                for (const transferStation of line1Stations) {
+                    for (const [line2Name, line2Stations] of Object.entries(JR_STATIONS)) {
+                        if (line1Name === line2Name) continue;
+                        
+                        const transferIndex1 = line1Stations.indexOf(transferStation);
+                        const transferIndex2 = line2Stations.indexOf(transferStation);
+                        const toIndex = line2Stations.indexOf(to);
+                        
+                        if (transferIndex1 !== -1 && transferIndex2 !== -1 && toIndex !== -1) {
+                            const segment1 = fromIndex < transferIndex1
+                                ? line1Stations.slice(fromIndex, transferIndex1 + 1)
+                                : line1Stations.slice(transferIndex1, fromIndex + 1).reverse();
+                            
+                            const segment2 = transferIndex2 < toIndex
+                                ? line2Stations.slice(transferIndex2, toIndex + 1)
+                                : line2Stations.slice(toIndex, transferIndex2 + 1).reverse();
+                            
+                            const distance = Math.abs(transferIndex1 - fromIndex) + Math.abs(toIndex - transferIndex2);
+                            const fare = calculateFare(distance);
+                            const time = 5 + distance * 2.5 + 5;
+                            
+                            return {
+                                line: `${line1Name} → ${line2Name}`,
+                                stations: [...segment1, ...segment2.slice(1)],
+                                distance,
+                                fare,
+                                time: Math.round(time),
+                                transfers: 1,
+                                transferStation,
+                                route: [
+                                    { line: line1Name, stations: segment1 },
+                                    { line: line2Name, stations: segment2 }
+                                ]
+                            };
+                        }
+                    }
+                }
+            }
+            
+            return {
+                line: '複数路線経由',
+                stations: [from, to],
+                distance: 15,
+                fare: 280,
+                time: 35,
+                transfers: 2,
+                route: [{ line: '複数路線経由', stations: [from, to] }]
+            };
+        };
+
+        function App() {
+            const [fromStation, setFromStation] = useState('');
+            const [toStation, setToStation] = useState('');
+            const [searchResult, setSearchResult] = useState(null);
+            const [savedRoutes, setSavedRoutes] = useState([]);
+            const [routeName, setRouteName] = useState('');
+            const [activeTab, setActiveTab] = useState('search');
+
+            useEffect(() => {
+                const saved = localStorage.getItem('savedRoutes');
+                if (saved) {
+                    setSavedRoutes(JSON.parse(saved));
+                }
+            }, []);
+
+            const handleSearch = () => {
+                if (fromStation && toStation && fromStation !== toStation) {
+                    const route = calculateRoute(fromStation, toStation);
+                    if (route) {
+                        setSearchResult({ 
+                            from: fromStation, 
+                            to: toStation, 
+                            ...route,
+                            searchedAt: new Date().toISOString()
+                        });
+                    }
+                }
+            };
+
+            const handleSaveRoute = () => {
+                if (searchResult && routeName.trim()) {
+                    const newRoute = {
+                        ...searchResult,
+                        name: routeName,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    const updated = [...savedRoutes, { ...newRoute, id: Date.now().toString() }];
+                    setSavedRoutes(updated);
+                    localStorage.setItem('savedRoutes', JSON.stringify(updated));
+                    
+                    setRouteName('');
+                    alert('経路を保存したよ！');
+                }
+            };
+
+            const handleDeleteRoute = (routeId) => {
+                if (confirm('この経路を削除する？')) {
+                    const updated = savedRoutes.filter(r => r.id !== routeId);
+                    setSavedRoutes(updated);
+                    localStorage.setItem('savedRoutes', JSON.stringify(updated));
+                }
+            };
+
+            const handlePresetSelect = (preset) => {
+                setFromStation(preset.from);
+                setToStation(preset.to);
+                setActiveTab('search');
+            };
+
+            const totalSavedFare = savedRoutes.reduce((sum, route) => sum + route.fare, 0);
+
+            return (
+                <div className="container">
+                    {/* ヘッダー */}
+                    <div style={{ textAlign: 'center', marginBottom: '2rem' }} className="bounce-in">
+                        <div className="float-animation" style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
+                        <h1 className="heading-font" style={{ 
+                            fontSize: '3.5rem', 
+                            fontWeight: '900',
+                            background: 'linear-gradient(to right, #db2777, #f97316, #eab308)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            marginBottom: '1rem'
+                        }}>
+                            2.28 オフ会
+                        </h1>
+                        <p style={{ fontSize: '1.25rem', color: '#374151', fontWeight: 'bold' }}>
+                            JR経路検索 & マイページ
+                        </p>
+                    </div>
+
+                    {/* タブナビゲーション */}
+                    <div className="slide-in-left" style={{ 
+                        display: 'flex', 
+                        gap: '0.5rem', 
+                        marginBottom: '1.5rem',
+                        background: 'white',
+                        borderRadius: '1rem',
+                        padding: '0.5rem',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    }}>
+                        <button
+                            onClick={() => setActiveTab('search')}
+                            className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
+                        >
+                            🔍 経路検索
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('preset')}
+                            className={`tab-button ${activeTab === 'preset' ? 'active' : ''}`}
+                        >
+                            ⚡ クイック検索
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('saved')}
+                            className={`tab-button ${activeTab === 'saved' ? 'active' : ''}`}
+                            style={{ position: 'relative' }}
+                        >
+                            💾 保存済み
+                            {savedRoutes.length > 0 && (
+                                <span className="badge">{savedRoutes.length}</span>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* 経路検索タブ */}
+                    {activeTab === 'search' && (
+                        <div>
+                            <div className="ticket-card bounce-in" style={{ 
+                                borderRadius: '1rem', 
+                                padding: '2rem',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                                marginBottom: '1.5rem'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                                    <div style={{ 
+                                        width: '3rem', 
+                                        height: '3rem',
+                                        background: 'linear-gradient(to bottom right, #3b82f6, #06b6d4)',
+                                        borderRadius: '9999px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                                    }}>
+                                        <span style={{ fontSize: '1.5rem' }}>🚆</span>
+                                    </div>
+                                    <h2 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#1f2937' }}>
+                                        JR経路検索
+                                    </h2>
+                                </div>
+
+                                <div style={{ 
+                                    display: 'grid', 
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                    gap: '1rem',
+                                    marginBottom: '1.5rem'
+                                }}>
+                                    <div>
+                                        <label style={{ 
+                                            display: 'block',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 'bold',
+                                            color: '#374151',
+                                            marginBottom: '0.5rem'
+                                        }}>
+                                            🚉 出発駅
+                                        </label>
+                                        <select
+                                            value={fromStation}
+                                            onChange={(e) => setFromStation(e.target.value)}
+                                        >
+                                            <option value="">駅を選択してね</option>
+                                            {ALL_STATIONS.map(station => (
+                                                <option key={station} value={station}>{station}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ 
+                                            display: 'block',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 'bold',
+                                            color: '#374151',
+                                            marginBottom: '0.5rem'
+                                        }}>
+                                            🎯 到着駅
+                                        </label>
+                                        <select
+                                            value={toStation}
+                                            onChange={(e) => setToStation(e.target.value)}
+                                        >
+                                            <option value="">駅を選択してね</option>
+                                            {ALL_STATIONS.map(station => (
+                                                <option key={station} value={station}>{station}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleSearch}
+                                    disabled={!fromStation || !toStation || fromStation === toStation}
+                                    style={{
+                                        width: '100%',
+                                        background: 'linear-gradient(to right, #ec4899, #f97316, #eab308)',
+                                        color: 'white',
+                                        padding: '1rem 1.5rem',
+                                        borderRadius: '0.75rem',
+                                        fontWeight: '900',
+                                        fontSize: '1.125rem',
+                                        border: 'none',
+                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.3s'
+                                    }}
+                                    onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                                >
+                                    🔍 経路を検索する！
+                                </button>
+                            </div>
+
+                            {/* 検索結果 */}
+                            {searchResult && (
+                                <div className="bounce-in">
+                                    <div style={{ 
+                                        background: 'white',
+                                        borderRadius: '1rem',
+                                        padding: '1.5rem',
+                                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                                        border: '4px solid #fde047'
+                                    }}>
+                                        <div style={{ 
+                                            display: 'flex', 
+                                            justifyContent: 'space-between', 
+                                            alignItems: 'center',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <h3 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#1f2937' }}>
+                                                検索結果
+                                            </h3>
+                                            <div style={{ fontSize: '2rem', fontWeight: '900', color: '#ec4899' }}>
+                                                ¥{searchResult.fare}
+                                            </div>
+                                        </div>
+
+                                        <div style={{ 
+                                            background: 'linear-gradient(to right, #fce7f3, #fef3c7)',
+                                            borderRadius: '0.75rem',
+                                            padding: '1rem',
+                                            marginBottom: '1rem'
+                                        }}>
+                                            <div style={{ 
+                                                display: 'flex', 
+                                                justifyContent: 'space-between', 
+                                                alignItems: 'center',
+                                                marginBottom: '0.75rem'
+                                            }}>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#1f2937' }}>
+                                                    {searchResult.from}
+                                                </div>
+                                                <span style={{ fontSize: '1.5rem' }}>→</span>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#1f2937' }}>
+                                                    {searchResult.to}
+                                                </div>
+                                            </div>
+                                            
+                                            {searchResult.route && searchResult.route.map((segment, idx) => (
+                                                <div key={idx} className="route-line-segment" style={{ marginTop: '1rem' }}>
+                                                    <div style={{ 
+                                                        background: 'white',
+                                                        borderRadius: '0.5rem',
+                                                        padding: '0.75rem',
+                                                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
+                                                    }}>
+                                                        <div style={{ 
+                                                            fontWeight: '900',
+                                                            color: '#1d4ed8',
+                                                            fontSize: '0.875rem',
+                                                            marginBottom: '0.5rem'
+                                                        }}>
+                                                            {segment.line}
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                            {segment.stations.map((station, i) => (
+                                                                <React.Fragment key={i}>
+                                                                    <span style={{ 
+                                                                        background: '#dbeafe',
+                                                                        padding: '0.25rem 0.75rem',
+                                                                        borderRadius: '9999px',
+                                                                        fontSize: '0.875rem',
+                                                                        fontWeight: 'bold',
+                                                                        color: '#374151'
+                                                                    }}>
+                                                                        {station}
+                                                                    </span>
+                                                                    {i < segment.stations.length - 1 && (
+                                                                        <span style={{ color: '#93c5fd', alignSelf: 'center' }}>→</span>
+                                                                    )}
+                                                                </React.Fragment>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div style={{ 
+                                            display: 'grid', 
+                                            gridTemplateColumns: 'repeat(3, 1fr)',
+                                            gap: '1rem',
+                                            marginBottom: '1.5rem'
+                                        }}>
+                                            <div style={{ 
+                                                background: '#dbeafe',
+                                                borderRadius: '0.5rem',
+                                                padding: '0.75rem',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>⏱️</div>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#4b5563', marginBottom: '0.25rem' }}>
+                                                    所要時間
+                                                </div>
+                                                <div style={{ fontWeight: '900', color: '#1f2937' }}>
+                                                    {searchResult.time}分
+                                                </div>
+                                            </div>
+                                            <div style={{ 
+                                                background: '#d1fae5',
+                                                borderRadius: '0.5rem',
+                                                padding: '0.75rem',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>🔄</div>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#4b5563', marginBottom: '0.25rem' }}>
+                                                    乗換
+                                                </div>
+                                                <div style={{ fontWeight: '900', color: '#1f2937' }}>
+                                                    {searchResult.transfers}回
+                                                </div>
+                                            </div>
+                                            <div style={{ 
+                                                background: '#e9d5ff',
+                                                borderRadius: '0.5rem',
+                                                padding: '0.75rem',
+                                                textAlign: 'center'
+                                            }}>
+                                                <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>📏</div>
+                                                <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#4b5563', marginBottom: '0.25rem' }}>
+                                                    駅数
+                                                </div>
+                                                <div style={{ fontWeight: '900', color: '#1f2937' }}>
+                                                    {searchResult.distance}駅
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* 保存フォーム */}
+                                        <div style={{ 
+                                            borderTop: '2px dashed #d1d5db',
+                                            paddingTop: '1rem'
+                                        }}>
+                                            <label style={{ 
+                                                display: 'block',
+                                                fontSize: '0.875rem',
+                                                fontWeight: 'bold',
+                                                color: '#374151',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                💾 この経路に名前をつけて保存
+                                            </label>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <input
+                                                    type="text"
+                                                    value={routeName}
+                                                    onChange={(e) => setRouteName(e.target.value)}
+                                                    placeholder="例: 最寄り駅→集合場所"
+                                                    style={{ flex: 1 }}
+                                                />
+                                                <button
+                                                    onClick={handleSaveRoute}
+                                                    disabled={!routeName.trim()}
+                                                    style={{
+                                                        background: 'linear-gradient(to right, #a855f7, #ec4899)',
+                                                        color: 'white',
+                                                        padding: '0.75rem 1.5rem',
+                                                        borderRadius: '0.75rem',
+                                                        fontWeight: '900',
+                                                        border: 'none',
+                                                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                                                        cursor: 'pointer',
+                                                        whiteSpace: 'nowrap'
+                                                    }}
+                                                >
+                                                    💾 保存
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* クイック検索タブ */}
+                    {activeTab === 'preset' && (
+                        <div className="bounce-in">
+                            <div style={{ 
+                                background: 'white',
+                                borderRadius: '1rem',
+                                padding: '1.5rem',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                            }}>
+                                <h3 style={{ 
+                                    fontSize: '1.5rem', 
+                                    fontWeight: '900', 
+                                    color: '#1f2937',
+                                    marginBottom: '1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
+                                }}>
+                                    ⚡ オフ会定番ルート
+                                </h3>
+                                <p style={{ color: '#4b5563', marginBottom: '1.5rem' }}>
+                                    よく使う経路をワンクリックで検索できるよ
+                                </p>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                    {PRESET_ROUTES.map((preset, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => handlePresetSelect(preset)}
+                                            style={{
+                                                width: '100%',
+                                                background: 'linear-gradient(to right, #dbeafe, #cffafe)',
+                                                border: '2px solid #93c5fd',
+                                                borderRadius: '0.75rem',
+                                                padding: '1rem',
+                                                textAlign: 'left',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s'
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.currentTarget.style.background = 'linear-gradient(to right, #bfdbfe, #a5f3fc)';
+                                                e.currentTarget.style.transform = 'scale(1.05)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.currentTarget.style.background = 'linear-gradient(to right, #dbeafe, #cffafe)';
+                                                e.currentTarget.style.transform = 'scale(1)';
+                                            }}
+                                        >
+                                            <div style={{ 
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '0.5rem'
+                                            }}>
+                                                <div style={{ fontWeight: '900', color: '#1f2937' }}>
+                                                    {preset.name}
+                                                </div>
+                                                <span style={{ fontSize: '1.25rem', color: '#2563eb' }}>→</span>
+                                            </div>
+                                            <div style={{ fontSize: '0.875rem', color: '#4b5563' }}>
+                                                {preset.description}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div style={{ 
+                                    marginTop: '1.5rem',
+                                    padding: '1rem',
+                                    background: '#fef3c7',
+                                    borderRadius: '0.75rem',
+                                    border: '2px solid #fde047'
+                                }}>
+                                    <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#374151', marginBottom: '0.5rem' }}>
+                                        💡 カスタムルートを追加したい？
+                                    </p>
+                                    <p style={{ fontSize: '0.875rem', color: '#4b5563' }}>
+                                        「経路検索」タブから検索して保存すると、あなた専用のルートが保存されるよ！
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 保存済みタブ */}
+                    {activeTab === 'saved' && (
+                        <div className="bounce-in">
+                            <div style={{ 
+                                background: 'white',
+                                borderRadius: '1rem',
+                                padding: '1.5rem',
+                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                            }}>
+                                <div style={{ 
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: '1.5rem'
+                                }}>
+                                    <h3 style={{ 
+                                        fontSize: '1.5rem', 
+                                        fontWeight: '900', 
+                                        color: '#1f2937',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
+                                    }}>
+                                        💾 保存済み経路
+                                    </h3>
+                                    {savedRoutes.length > 0 && (
+                                        <div style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#4b5563' }}>
+                                            全{savedRoutes.length}件
+                                        </div>
+                                    )}
+                                </div>
+
+                                {savedRoutes.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+                                        <div style={{ fontSize: '4rem', color: '#d1d5db', marginBottom: '1rem' }}>💾</div>
+                                        <p style={{ color: '#6b7280', fontWeight: '500', marginBottom: '0.5rem' }}>
+                                            まだ保存済みの経路がないよ
+                                        </p>
+                                        <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
+                                            「経路検索」から検索して保存してみよう
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                                            {savedRoutes.map((route, index) => (
+                                                <div
+                                                    key={route.id}
+                                                    className="slide-in-left"
+                                                    style={{ 
+                                                        border: '2px solid #e9d5ff',
+                                                        borderRadius: '0.75rem',
+                                                        padding: '1rem',
+                                                        transition: 'all 0.3s',
+                                                        animationDelay: `${index * 0.1}s`
+                                                    }}
+                                                    onMouseOver={(e) => {
+                                                        e.currentTarget.style.borderColor = '#c084fc';
+                                                        e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+                                                    }}
+                                                    onMouseOut={(e) => {
+                                                        e.currentTarget.style.borderColor = '#e9d5ff';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                    }}
+                                                >
+                                                    <div style={{ 
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'flex-start',
+                                                        marginBottom: '0.75rem'
+                                                    }}>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ 
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem',
+                                                                marginBottom: '0.5rem'
+                                                            }}>
+                                                                <div style={{ 
+                                                                    width: '2rem',
+                                                                    height: '2rem',
+                                                                    background: 'linear-gradient(to bottom right, #a855f7, #ec4899)',
+                                                                    borderRadius: '9999px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    color: 'white',
+                                                                    fontWeight: '900',
+                                                                    fontSize: '0.875rem'
+                                                                }}>
+                                                                    {index + 1}
+                                                                </div>
+                                                                <h4 style={{ fontWeight: '900', color: '#1f2937' }}>
+                                                                    {route.name}
+                                                                </h4>
+                                                            </div>
+                                                            <div style={{ 
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.5rem',
+                                                                color: '#374151',
+                                                                fontWeight: '500'
+                                                            }}>
+                                                                <span>{route.from}</span>
+                                                                <span style={{ color: '#a855f7' }}>→</span>
+                                                                <span>{route.to}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ textAlign: 'right' }}>
+                                                            <div style={{ 
+                                                                fontSize: '1.5rem',
+                                                                fontWeight: '900',
+                                                                color: '#a855f7'
+                                                            }}>
+                                                                ¥{route.fare}
+                                                            </div>
+                                                            <button
+                                                                onClick={() => handleDeleteRoute(route.id)}
+                                                                style={{
+                                                                    marginTop: '0.5rem',
+                                                                    color: '#ef4444',
+                                                                    background: 'transparent',
+                                                                    border: 'none',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '1.25rem'
+                                                                }}
+                                                            >
+                                                                🗑️
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ 
+                                                        display: 'grid',
+                                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                                        gap: '0.5rem',
+                                                        fontSize: '0.875rem'
+                                                    }}>
+                                                        <div style={{ 
+                                                            background: '#dbeafe',
+                                                            borderRadius: '0.5rem',
+                                                            padding: '0.5rem',
+                                                            textAlign: 'center'
+                                                        }}>
+                                                            <div style={{ fontWeight: 'bold', color: '#1f2937' }}>
+                                                                {route.time}分
+                                                            </div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+                                                                所要時間
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ 
+                                                            background: '#d1fae5',
+                                                            borderRadius: '0.5rem',
+                                                            padding: '0.5rem',
+                                                            textAlign: 'center'
+                                                        }}>
+                                                            <div style={{ fontWeight: 'bold', color: '#1f2937' }}>
+                                                                {route.transfers}回
+                                                            </div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+                                                                乗換
+                                                            </div>
+                                                        </div>
+                                                        <div style={{ 
+                                                            background: '#e9d5ff',
+                                                            borderRadius: '0.5rem',
+                                                            padding: '0.5rem',
+                                                            textAlign: 'center'
+                                                        }}>
+                                                            <div style={{ fontWeight: 'bold', color: '#1f2937' }}>
+                                                                {route.distance}駅
+                                                            </div>
+                                                            <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+                                                                駅数
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ 
+                                                        marginTop: '0.75rem',
+                                                        paddingTop: '0.75rem',
+                                                        borderTop: '1px solid #e5e7eb'
+                                                    }}>
+                                                        <div style={{ 
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 'bold',
+                                                            color: '#4b5563',
+                                                            marginBottom: '0.25rem'
+                                                        }}>
+                                                            {route.line}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                                                            保存日時: {new Date(route.createdAt).toLocaleString('ja-JP')}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* 合計表示 */}
+                                        <div style={{ 
+                                            background: 'linear-gradient(to right, #a855f7, #ec4899)',
+                                            borderRadius: '1rem',
+                                            padding: '1.5rem',
+                                            color: 'white',
+                                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                                        }}>
+                                            <div style={{ 
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center'
+                                            }}>
+                                                <div>
+                                                    <div style={{ 
+                                                        fontSize: '0.875rem',
+                                                        fontWeight: 'bold',
+                                                        opacity: 0.9,
+                                                        marginBottom: '0.25rem'
+                                                    }}>
+                                                        保存済み経路の合計運賃
+                                                    </div>
+                                                    <div style={{ fontSize: '2.5rem', fontWeight: '900' }}>
+                                                        ¥{totalSavedFare}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.875rem', opacity: 0.75, marginTop: '0.25rem' }}>
+                                                        全{savedRoutes.length}件の経路
+                                                    </div>
+                                                </div>
+                                                <div style={{ fontSize: '4rem' }}>💰</div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* フッター */}
+                    <div style={{ marginTop: '3rem', textAlign: 'center', opacity: 0.6 }}>
+                        <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#4b5563' }}>
+                            楽しいオフ会になりますように 🎊
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
