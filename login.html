@@ -1,45 +1,57 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>OMS ログイン</title>
+  <meta charset="UTF-8">
+  <title>新規登録｜OMS</title>
 </head>
 <body>
 
-<h2>OMS ログイン</h2>
+<h2>新規ユーザー登録</h2>
 
-<input type="email" id="email" placeholder="メールアドレス"><br>
-<input type="password" id="password" placeholder="パスワード"><br><br>
-
-<button id="loginBtn">ログイン</button>
+<form id="registerForm">
+  <input type="email" id="email" placeholder="メールアドレス" required><br><br>
+  <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br><br>
+  <button type="submit">登録</button>
+</form>
 
 <p>
-<a href="signup.html">新規登録</a><br>
-<a href="reset.html">パスワードを忘れた</a>
+  <a href="login.html">ログインはこちら</a>
 </p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const app = initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
   authDomain: "offline-meet-up.firebaseapp.com",
   projectId: "offline-meet-up",
-  storageBucket: "offline-meet-up.appspot.com",
-  messagingSenderId: "834362010778",
-  appId: "1:834362010778:web:4af33334a26024f3cfc323"
-});
+};
 
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-loginBtn.onclick = async () => {
+registerForm.onsubmit = async (e) => {
+  e.preventDefault();
+
   try {
-    const res = await signInWithEmailAndPassword(auth, email.value, password.value);
-    if (!res.user.emailVerified) return await signOut(auth), alert("メール確認してね📩");
-    location.href = "index.html";
-  } catch {
-    alert("メールアドレスかパスワードが違うよ");
+    const userCred = await createUserWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+
+    await sendEmailVerification(userCred.user);
+
+    alert("登録完了！\n確認メールを送ったよ📩\nメール確認後にログインしてね！");
+    location.href = "login.html";
+
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      alert("このメールは既に登録されています。\nログインしてね！");
+    } else {
+      alert(err.message);
+    }
   }
 };
 </script>
