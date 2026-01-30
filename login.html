@@ -1,124 +1,48 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ログイン</title>
+<meta charset="UTF-8">
+<title>OMS ログイン</title>
 </head>
 <body>
-<div class="container">
-  <div class="welcome">
-    <div class="pinkbox">
-      <div class="signup nodisplay">
-        <h1>register</h1>
-        <form autocomplete="off">
-          <input type="text" placeholder="username">
-          <input type="email" placeholder="email">
-          <input type="password" placeholder="password">
-          <input type="password" placeholder="confirm password">
-          <button class="button submit">create account </button>
-        </form>
-      </div>
-      <div class="signin">
-        <h1>sign in</h1>
-        <form class="more-padding" autocomplete="off">
-          <input type="text" placeholder="username">
-          <input type="password" placeholder="password">
-          <div class="checkbox">
-            <input type="checkbox" id="remember" /><label for="remember">remember me</label>
-          </div>
 
-          <button class="button submit">login</button>
-        </form>
-      </div>
-    </div>
-    <div class="leftbox">
-      <h2 class="title"><span>BLOOM</span>&<br>BOUQUET</h2>
-      <p class="desc">pick your perfect <span>bouquet</span></p>
-      <img class="flower smaller" src="https://image.ibb.co/d5X6pn/1357d638624297b.jpg" alt="1357d638624297b" border="0">
-      <p class="account">have an account?</p>
-      <button class="button" id="signin">login</button>
-    </div>
-    <div class="rightbox">
-      <h2 class="title"><span>BLOOM</span>&<br>BOUQUET</h2>
-      <p class="desc"> pick your perfect <span>bouquet</span></p>
-      <img class="flower" src="https://preview.ibb.co/jvu2Un/0057c1c1bab51a0.jpg"/>
-      <p class="account">don't have an account?</p>
-      <button class="button" id="signup">sign up</button>
-    </div>
-  </div>
- </div>
+<h2>OMS ログイン</h2>
 
-</div>
-<h2>ログイン</h2>
-
-<input type="email" id="email" placeholder="メールアドレス">
-<br>
-<input type="password" id="password" placeholder="パスワード">
-<br><br>
+<input type="email" id="email" placeholder="メールアドレス"><br>
+<input type="password" id="password" placeholder="パスワード"><br><br>
 
 <button id="loginBtn">ログイン</button>
 
-<div style="margin-top:16px; text-align:center;">
-  <a href="signup.html">新規登録はこちら</a><br>
-  <a href="reset.html">パスワード忘れた方</a>
-</div>
+<p>
+<a href="signup.html">新規登録</a><br>
+<a href="reset.html">パスワードを忘れた</a>
+</p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const firebaseConfig = {
+const app = initializeApp({
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
   authDomain: "offline-meet-up.firebaseapp.com",
   projectId: "offline-meet-up",
-  storageBucket: "offline-meet-up.firebasestorage.app",
+  storageBucket: "offline-meet-up.appspot.com",
   messagingSenderId: "834362010778",
   appId: "1:834362010778:web:4af33334a26024f3cfc323"
-};
+});
 
-const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 loginBtn.onclick = async () => {
   try {
-    const result = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-
-    if (!result.user.emailVerified) {
-      await signOut(auth);
-      alert("メール確認が完了していません📩\n確認メールをチェックしてね");
-      return;
-    }
-
+    const res = await signInWithEmailAndPassword(auth, email.value, password.value);
+    if (!res.user.emailVerified) return await signOut(auth), alert("メール確認してね📩");
     location.href = "index.html";
-  } catch (e) {
-    alert("メールアドレスかパスワードが違います");
+  } catch {
+    alert("メールアドレスかパスワードが違うよ");
   }
 };
 </script>
 
 </body>
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-
-const firebaseConfig = { ★同じ設定★ };
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-loginForm.onsubmit = async (e) => {
-  e.preventDefault();
-  try {
-    await signInWithEmailAndPassword(auth, email.value, password.value);
-    location.href = "join.html";
-  } catch (e) {
-    alert(e.code);
-  }
-};
-</script>
-  if (error.code === "auth/email-already-in-use") alert("このメールアドレスは既に登録されています。ログインしてね！");
 </html>
