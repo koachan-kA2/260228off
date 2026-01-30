@@ -2,25 +2,24 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>新規登録｜OMS</title>
+  <title>ログイン｜OMS</title>
 </head>
 <body>
 
-<h2>新規ユーザー登録</h2>
+<h2>ログイン</h2>
 
-<form id="registerForm">
-  <input type="email" id="email" placeholder="メールアドレス" required><br><br>
-  <input type="password" id="password" placeholder="パスワード（6文字以上）" required><br><br>
-  <button type="submit">登録</button>
-</form>
+<input type="email" id="email" placeholder="メールアドレス"><br><br>
+<input type="password" id="password" placeholder="パスワード"><br><br>
+
+<button id="loginBtn">ログイン</button>
 
 <p>
-  <a href="login.html">ログインはこちら</a>
+  <a href="signup.html">新規登録</a>
 </p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
@@ -31,27 +30,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-registerForm.onsubmit = async (e) => {
-  e.preventDefault();
-
+loginBtn.onclick = async () => {
   try {
-    const userCred = await createUserWithEmailAndPassword(
+    const result = await signInWithEmailAndPassword(
       auth,
       email.value,
       password.value
     );
 
-    await sendEmailVerification(userCred.user);
-
-    alert("登録完了！\n確認メールを送ったよ📩\nメール確認後にログインしてね！");
-    location.href = "login.html";
-
-  } catch (err) {
-    if (err.code === "auth/email-already-in-use") {
-      alert("このメールは既に登録されています。\nログインしてね！");
-    } else {
-      alert(err.message);
+    if (!result.user.emailVerified) {
+      await signOut(auth);
+      alert("メール確認がまだだよ📩\n確認後にもう一度ログインしてね！");
+      return;
     }
+
+    location.href = "index.html";
+
+  } catch {
+    alert("メールアドレスかパスワードが違います");
   }
 };
 </script>
