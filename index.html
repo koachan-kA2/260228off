@@ -1,146 +1,19 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <h1>オフ会サイト</h1>
-
-<a href="login.html">ログイン</a><br><br>
-<a href="signup.html">新規登録はこちら</a>
-<head>
-  <meta charset="UTF-8">
-  <title>オフ会参加ページ</title>
-</head>
-
-<body>
-
-<h2>オフ会参加フォーム</h2>
-<p>ログインしている人だけ参加できます✨</p>
-
-<form id="joinForm">
-  <label>
-    名前:
-    <input type="text" id="name" required>
-  </label>
-  <br><br>
-
-  <label>
-    参加人数:
-    <input type="number" id="people" min="1" value="1" required>
-  </label>
-  <br><br>
-
-  <button type="submit">参加する</button>
-</form>
-
-<br>
-
-<button id="logoutBtn">ログアウト</button>
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
   authDomain: "offline-meet-up.firebaseapp.com",
   projectId: "offline-meet-up",
-  storageBucket: "offline-meet-up.firebasestorage.app",
-  messagingSenderId: "834362010778",
-  appId: "1:834362010778:web:4af33334a26024f3cfc323",
-  measurementId: "G-BX7SWWG5T5"
 };
 
 const app = initializeApp(firebaseConfig);
-getAnalytics(app);
-
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-// 🔒 ログインチェック
 onAuthStateChanged(auth, (user) => {
   if (!user || !user.emailVerified) {
     location.href = "login.html";
   }
 });
-
-// 🚪 ログアウト
-document.getElementById("logoutBtn").onclick = async () => {
-  await signOut(auth);
-  location.href = "login.html";
-};
-
-// 📝 参加フォーム送信
-document.getElementById("joinForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const name = document.getElementById("name").value.trim();
-  const people = Number(document.getElementById("people").value);
-
-  if (!name || people < 1) {
-    alert("正しく入力してね");
-    return;
-  }
-
-  await addDoc(collection(db, "participants"), {
-    name,
-    people,
-    timestamp: serverTimestamp(),
-    userId: auth.currentUser.uid
-  });
-
-  alert("参加登録完了✨");
-  e.target.reset();
-});
 </script>
-
-<!-- tawk.to chat（1回だけ・正しいID） -->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6979b443f957841983b37d8b/1jg1mgaaa';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-
-</body>
-  <!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>ホーム</title>
-</head>
-
-<body>
-
-<h1>ようこそ</h1>
-<a href="register.html">新規登録はこちら</a><br>
-<a href="login.html">ログイン</a>
-
-<!-- 🔽 ここに入れる（bodyの一番下） -->
-<script>
-var Tawk_API=Tawk_API||{},Tawk_LoadStart=new Date();
-(function(){
-  var s1=document.createElement("script"),
-      s0=document.getElementsByTagName("script")[0];
-  s1.async=true;
-  s1.src='https://embed.tawk.to/6979b443f957841983b37d8b/1jg1mgaaa';
-  s1.charset='UTF-8';
-  s1.setAttribute('crossorigin','*');
-  s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-
-</body>
-  onAuthStateChanged(auth, (user) => {
-  if (!user || !user.emailVerified) {
-    alert("メール認証が必要だよ！");
-    location.href = "login.html";
-  }
-});
-</html>
-</html>
