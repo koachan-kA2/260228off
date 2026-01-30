@@ -1,19 +1,22 @@
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>OMS HOME</title>
+</head>
+<body>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
-  authDomain: "offline-meet-up.firebaseapp.com",
-  projectId: "offline-meet-up",
-};
+<h1>OMS HOME</h1>
+<p>ようこそ <span id="userEmail"></span> さん</p>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+<ul>
+  <li><a href="route.html">経路検索</a></li>
+  <li><a href="mypage.html">マイページ</a></li>
+  <li><a href="square.html">みんなの広場</a></li>
+</ul>
 
-onAuthStateChanged(auth, (user) => {
-  if (!user || !user.emailVerified) {
-    location.href = "login.html";
-  }
-});
-</script>
+<button id="logoutBtn">ログアウト</button>
+
+<script type="module" src="home.js"></script>
+</body>
+</html>
