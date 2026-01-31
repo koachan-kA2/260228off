@@ -1,61 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ログイン｜OMS</title>
+    <meta charset="UTF-8">
+    <title>Login - かみさまの場所</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<h2>ログイン</h2>
-
-<input type="email" id="email" placeholder="メールアドレス"><br><br>
-<input type="password" id="password" placeholder="パスワード"><br><br>
-
-<button id="loginBtn">ログイン</button>
-
-<p>
-  <a href="signup.html">新規登録</a>
-</p>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
-  authDomain: "offline-meet-up.firebaseapp.com",
-  projectId: "offline-meet-up",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-loginBtn.onclick = async () => {
-  try {
-    const result = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-
-    if (!result.user.emailVerified) {
-      await signOut(auth);
-      alert("メール確認がまだだよ📩\n確認後にもう一度ログインしてね！");
-      return;
-    }
-
-    location.href = "index.html";
-
-  } catch {
-    alert("メールアドレスかパスワードが違います");
-  }
-};
-</script>
-
+    <div class="container">
+        <h2>Login ♡</h2>
+        <form>
+            <input type="text" placeholder="ユーザー名" required>
+            <input type="password" placeholder="パスワード" required>
+            <button type="submit">ログイン</button>
+        </form>
+        <a href="signup.html">新しくはじめる（新規登録）</a>
+    </div>
 </body>
-signInWithEmailAndPassword(
-  auth,
-  username.value + "@oms.local",
-  password.value
-);
 </html>
