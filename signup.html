@@ -1,39 +1,39 @@
-<input id="email" type="email" placeholder="メールアドレス">
+<!DOCTYPE html>
+<html lang="ja">
+<meta charset="UTF-8">
+<title>新規登録</title>
+
+<h2>新規会員登録</h2>
+
+<input id="username" placeholder="ユーザーネーム">
+<br>
 <input id="password" type="password" placeholder="パスワード">
+<br><br>
+
 <button id="signupBtn">登録</button>
+<p id="msg"></p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const firebaseConfig = {
+initializeApp({
   apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
   authDomain: "offline-meet-up.firebaseapp.com",
   projectId: "offline-meet-up",
-};
+});
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = getAuth();
 
 signupBtn.onclick = async () => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-
-    await sendEmailVerification(userCredential.user);
-
-    alert("確認メールを送信しました📩\nメールを確認してからログインしてね！");
+    const email = username.value + "@oms.local";
+    const user = await createUserWithEmailAndPassword(auth, email, password.value);
+    await updateProfile(user.user, { displayName: username.value });
     location.href = "login.html";
-
-  } catch (e) {
-    if (e.code === "auth/email-already-in-use") {
-      alert("このメールアドレスは既に登録されています！");
-    } else {
-      alert("登録エラー：" + e.message);
-    }
+  } catch(e) {
+    msg.textContent = "登録できません：" + e.code;
   }
 };
 </script>
+</html>
