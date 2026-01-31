@@ -1,54 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>OMS HOME</title>
+<meta charset="UTF-8">
+<title>OMS HOME</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: system-ui;
+  background:#f6f7ff;
+  margin:0;
+}
+header {
+  background:#6c9cff;
+  color:white;
+  padding:16px;
+  font-size:20px;
+}
+main {
+  padding:20px;
+}
+.card {
+  background:white;
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+button {
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  background:#ff9eb5;
+  color:white;
+}
+</style>
 </head>
 
 <body>
-  <h1>OMS HOME</h1>
-  <p>ようこそ <span id="userEmail"></span> さん</p>
+<header>OMS HOME</header>
 
-  <ul>
-    <li><a href="route.html">経路検索</a></li>
-    <li><a href="mypage.html">マイページ</a></li>
-    <li><a href="square.html">みんなの広場</a></li>
-  </ul>
+<main>
+  <div class="card">
+    ようこそ <b id="name"></b> さん
+  </div>
 
-  <button id="logoutBtn">ログアウト</button>
+  <div class="card">🚃 経路検索</div>
+  <div class="card">👤 マイページ</div>
+  <div class="card">💬 みんなの広場</div>
 
-  <!-- 🔽 Firebase 認証処理は body の一番下 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged, 
-      signOut 
-    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  <button onclick="logout()">ログアウト</button>
+</main>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
-      authDomain: "offline-meet-up.firebaseapp.com",
-      projectId: "offline-meet-up",
-    };
+<script>
+const LIMIT = 30 * 60 * 1000;
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+const user = localStorage.getItem("loginUser");
+const time = localStorage.getItem("loginTime");
 
-    // 🔐 ログイン状態チェック
-    onAuthStateChanged(auth, (user) => {
-      if (!user || !user.emailVerified) {
-        location.href = "login.html";
-        return;
-      }
-      document.getElementById("userEmail").textContent = user.email;
-    });
+if (!user || Date.now() - time > LIMIT) {
+  localStorage.clear();
+  location.href = "login.html";
+}
 
-    // 🚪 ログアウト
-    document.getElementById("logoutBtn").onclick = async () => {
-      await signOut(auth);
-      location.href = "login.html";
-    };
-  </script>
+name.textContent = user;
+
+function logout() {
+  localStorage.clear();
+  location.href = "login.html";
+}
+</script>
 </body>
 </html>
