@@ -30,4 +30,17 @@ setTimeout(async () => {
   location.href = "login.html";
 }, 30 * 60 * 1000);
 </script>
+<script type="module">
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const auth = getAuth();
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    location.href = "login.html";
+  } else {
+    document.getElementById("userName").textContent = user.displayName;
+  }
+});
+</script>
 </html>
