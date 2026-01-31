@@ -1,58 +1,74 @@
-<style>
-body{
-  margin:0;
-  font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:#f6f7f9;
-  cursor:url("cursor.png"), auto;
-}
-
-h1{
-  font-size:22px;
-  margin-bottom:12px;
-}
-
-.card{
-  background:white;
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-  margin-bottom:16px;
-}
-
-a{
-  text-decoration:none;
-  color:#ff7aa2;
-  font-weight:600;
-}
-</style>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>経路検索</title>
+<title>経路検索｜OMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: system-ui;
+  background:#f6f7ff;
+  margin:0;
+}
+header {
+  background:#6c9cff;
+  color:white;
+  padding:16px;
+  font-size:20px;
+}
+main {
+  padding:20px;
+}
+.card {
+  background:white;
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+input {
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-bottom:12px;
+}
+button {
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  background:#6c9cff;
+  color:white;
+}
+</style>
 </head>
 
 <body>
-<h1>経路検索</h1>
+<header>🚃 経路検索</header>
 
-<div class="card">
-<input id="from" placeholder="出発駅">
-<input id="to" placeholder="到着駅">
-<button onclick="search()">検索</button>
-<p id="result"></p>
-</div>
-
-<a href="index.html">← トップに戻る</a>
+<main>
+  <div class="card">
+    <input id="from" placeholder="出発駅（例：新宿）">
+    <input id="to" placeholder="到着駅（例：渋谷）">
+    <button onclick="search()">検索する</button>
+  </div>
+</main>
 
 <script>
-function search(){
-  const f=from.value;
-  const t=to.value;
-  result.textContent =
-    f==="新宿" && t==="渋谷"
-    ? "山手線 約7分"
-    : "経路準備中";
+function search() {
+  const from = document.getElementById("from").value;
+  const to = document.getElementById("to").value;
+  if (!from || !to) return alert("駅名を入力してね");
+
+  location.href =
+    "https://transit.yahoo.co.jp/search/result?from=" +
+    encodeURIComponent(from) +
+    "&to=" +
+    encodeURIComponent(to);
 }
 </script>
 </body>
