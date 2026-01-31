@@ -1,19 +1,49 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - かみさまの場所</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>ログイン</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Login ♡</h2>
-        <form>
-            <input type="text" placeholder="ユーザー名" required>
-            <input type="password" placeholder="パスワード" required>
-            <button type="submit">ログイン</button>
-        </form>
-        <a href="signup.html">新しくはじめる（新規登録）</a>
-    </div>
+<div class="container">
+  <h1>ログイン</h1>
+
+  <input id="email" type="email" placeholder="メールアドレス">
+  <input id="password" type="password" placeholder="パスワード">
+
+  <button id="loginBtn">ログイン</button>
+
+  <div class="link">
+    <a href="register.html">新規登録</a><br>
+    <a href="reset.html">パスワード忘れた</a>
+  </div>
+</div>
+
+<script type="module">
+import {
+  auth,
+  signInWithEmailAndPassword,
+  signOut
+} from "./auth.js";
+
+loginBtn.onclick = async () => {
+  try {
+    const result = await signInWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value
+    );
+    if (!result.user.emailVerified) {
+      await signOut(auth);
+      alert("メール確認してね📩");
+      return;
+    }
+    location.href = "home.html";
+  } catch {
+    alert("ログイン失敗");
+  }
+};
+</script>
 </body>
 </html>
