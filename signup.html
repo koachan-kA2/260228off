@@ -1,39 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
-<meta charset="UTF-8">
-<title>新規登録</title>
-
-<h2>新規会員登録</h2>
-
-<input id="username" placeholder="ユーザーネーム">
-<br>
-<input id="password" type="password" placeholder="パスワード">
-<br><br>
-
-<button id="signupBtn">登録</button>
-<p id="msg"></p>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-
-initializeApp({
-  apiKey: "AIzaSyA5KQPd73BJS7k6ueZP8KjyEz78LQfhzek",
-  authDomain: "offline-meet-up.firebaseapp.com",
-  projectId: "offline-meet-up",
-});
-
-const auth = getAuth();
-
-signupBtn.onclick = async () => {
-  try {
-    const email = username.value + "@oms.local";
-    const user = await createUserWithEmailAndPassword(auth, email, password.value);
-    await updateProfile(user.user, { displayName: username.value });
-    location.href = "login.html";
-  } catch(e) {
-    msg.textContent = "登録できません：" + e.code;
-  }
-};
-</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up - かみさまの場所</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Sign Up ☆</h2>
+        <form>
+            <input type="text" placeholder="おなまえ" required>
+            <input type="email" placeholder="メールアドレス" required>
+            <input type="password" placeholder="パスワード" required>
+            <button type="submit">登録する</button>
+        </form>
+        <a href="login.html">ログイン画面へもどる</a>
+    </div>
+</body>
 </html>
