@@ -1,0 +1,76 @@
+/* 全体の背景とフォント */
+body {
+    background-color: #fff0f6; /* 薄いピンク */
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* カード状のフォーム容器 */
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 30px; /* 角を丸く */
+    box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4); /* ピンク系の影 */
+    width: 320px;
+    text-align: center;
+    border: 3px solid #ffdeeb;
+}
+
+h2 {
+    color: #ff85a2;
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+/* 入力欄のデザイン */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ffe3ec;
+    border-radius: 15px;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #ff85a2;
+    background-color: #fff9fb;
+}
+
+/* ボタンのデザイン */
+button {
+    background-color: #ff85a2;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+button:hover {
+    background-color: #ff5c81;
+    transform: scale(1.05); /* 少し大きく */
+}
+
+/* リンクのデザイン */
+a {
+    display: block;
+    margin-top: 15px;
+    color: #ffb3c1;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
