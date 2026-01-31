@@ -1,75 +1,126 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>経路検索｜OMS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body {
-  font-family: system-ui;
-  background:#f6f7ff;
-  margin:0;
-}
-header {
-  background:#6c9cff;
-  color:white;
-  padding:16px;
-  font-size:20px;
-}
-main {
-  padding:20px;
-}
-.card {
-  background:white;
-  padding:16px;
-  border-radius:14px;
-  margin-bottom:14px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
-input {
-  width:100%;
-  padding:14px;
-  font-size:16px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  margin-bottom:12px;
-}
-button {
-  width:100%;
-  padding:14px;
-  font-size:16px;
-  border:none;
-  border-radius:10px;
-  background:#6c9cff;
-  color:white;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>経路検索・運賃計算 - かみさまの場所</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 追加のスタイル */
+        .route-container { width: 90%; max-width: 800px; margin: 20px auto; }
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+        .tab-btn { background: #ffe3ec; border: none; padding: 10px 20px; cursor: pointer; border-radius: 10px 10px 0 0; margin: 0 5px; color: #ff85a2; font-weight: bold; }
+        .tab-btn.active { background: #ff85a2; color: white; }
+        
+        .search-box { background: white; padding: 20px; border-radius: 20px; border: 2px solid #ffdeeb; margin-bottom: 20px; }
+        .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .input-group input { width: 40%; }
+        
+        .option-group { margin: 15px 0; font-size: 14px; color: #666; }
+        .result-area { background: #fff9fb; padding: 15px; border-radius: 15px; border: 1px dashed #ff85a2; }
+        
+        .fare-list { margin-top: 30px; text-align: left; }
+        .fare-item { background: white; padding: 10px; border-radius: 10px; margin-bottom: 5px; border-left: 5px solid #ff85a2; display: flex; justify-content: space-between; }
+        .total-box { font-size: 20px; font-weight: bold; color: #ff5c81; text-align: right; margin-top: 20px; padding: 10px; border-top: 2px solid #ff85a2; }
+        
+        .btn-reset { background-color: #ccc; }
+        .btn-delete { background-color: #ff4d4d; padding: 5px 10px; font-size: 12px; margin-left: 10px; }
+    </style>
 </head>
-
 <body>
-<header>🚃 経路検索</header>
+    <div class="route-container">
+        <h2 id="user-greeting">Welcome!</h2>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('shinkansen')">新幹線</button>
+            <button class="tab-btn" onclick="switchTab('local')">JR・地下鉄・私鉄</button>
+        </div>
 
-<main>
-  <div class="card">
-    <input id="from" placeholder="出発駅（例：新宿）">
-    <input id="to" placeholder="到着駅（例：渋谷）">
-    <button onclick="search()">検索する</button>
-  </div>
-</main>
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="start-station" placeholder="[乗車駅]">
+                <span>▶</span>
+                <input type="text" id="end-station" placeholder="[降車駅]">
+            </div>
+            
+            <div class="input-group">
+                <input type="datetime-local" id="search-time">
+                <label><input type="checkbox" id="student-discount"> 学割適用</label>
+            </div>
 
-<script>
-function search() {
-  const from = document.getElementById("from").value;
-  const to = document.getElementById("to").value;
-  if (!from || !to) return alert("駅名を入力してね");
+            <button onclick="searchRoute()">検索・追加</button>
+            <button class="btn-reset" onclick="resetForm()">リセット</button>
+        </div>
 
-  location.href =
-    "https://transit.yahoo.co.jp/search/result?from=" +
-    encodeURIComponent(from) +
-    "&to=" +
-    encodeURIComponent(to);
-}
-</script>
+        <div class="fare-list">
+            <h3>乗車列車一覧</h3>
+            <div id="route-results">
+                </div>
+            <div class="total-box">
+                合計運賃: <span id="total-fare">¥0</span>
+            </div>
+        </div>
+
+        <a href="login.html">← ニックネームを変更する</a>
+    </div>
+
+    <script>
+        // ニックネームの表示（簡易版）
+        const urlParams = new URLSearchParams(window.location.search);
+        const nickname = urlParams.get('name') || 'ゲスト';
+        document.getElementById('user-greeting').innerText = `${nickname}さんの経路検索`;
+
+        let totalFare = 0;
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            // ここで検索対象のデータベースを切り替えるロジックを入れる
+        }
+
+        function searchRoute() {
+            const start = document.getElementById('start-station').value;
+            const end = document.getElementById('end-station').value;
+            const isStudent = document.getElementById('student-discount').checked;
+            
+            if(!start || !end) return alert("駅名を入力してください");
+
+            // 本来はここで時刻表・運賃データを計算
+            // デモ用にランダムな運賃を生成
+            let fare = Math.floor(Math.random() * 2000) + 160;
+            if(isStudent) fare = Math.floor(fare * 0.8);
+
+            const resultArea = document.getElementById('route-results');
+            const item = document.createElement('div');
+            item.className = 'fare-item';
+            item.innerHTML = `
+                <span>${start} → ${end} (12:34発予定)</span>
+                <span>¥${fare} 
+                    <button class="btn-delete" onclick="deleteRoute(this, ${fare})">削除</button>
+                </span>
+            `;
+            
+            resultArea.appendChild(item);
+            totalFare += fare;
+            updateTotal();
+        }
+
+        function deleteRoute(btn, fare) {
+            btn.parentElement.parentElement.remove();
+            totalFare -= fare;
+            updateTotal();
+        }
+
+        function resetForm() {
+            document.getElementById('start-station').value = '';
+            document.getElementById('end-station').value = '';
+            document.getElementById('route-results').innerHTML = '';
+            totalFare = 0;
+            updateTotal();
+        }
+
+        function updateTotal() {
+            document.getElementById('total-fare').innerText = `¥${totalFare}`;
+        }
+    </script>
 </body>
 </html>
