@@ -1,55 +1,102 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ログイン</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="container">
-  <h1>ログイン</h1>
+<meta charset="UTF-8">
+<title>OMS ログイン</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <input id="email" type="email" placeholder="メールアドレス">
+<style>
+body {
+  font-family: system-ui, -apple-system;
+  background: linear-gradient(135deg,#ffd1dc,#c1e1ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.box {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+input {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 8px;
+}
+.login { background:#6c9cff; color:white; }
+.register { background:#ff9eb5; color:white; }
+.msg {
+  text-align:center;
+  margin-top:10px;
+  color:red;
+}
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h1>OMS</h1>
+
+  <input id="username" placeholder="ユーザーネーム">
   <input id="password" type="password" placeholder="パスワード">
 
-  <button id="loginBtn">ログイン</button>
+  <button class="login" type="button" onclick="login()">ログイン</button>
+  <button class="register" type="button" onclick="register()">新規登録</button>
 
-  <div class="link">
-    <a href="register.html">新規登録</a><br>
-    <a href="reset.html">パスワード忘れた</a>
-  </div>
+  <div class="msg" id="msg"></div>
 </div>
 
-<script type="module">
-import {
-  auth,
-  signInWithEmailAndPassword,
-  signOut
-} from "./auth.js";
+<script>
+const LIMIT = 30 * 60 * 1000; // 30分
 
-loginBtn.onclick = async () => {
-  try {
-    const result = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-    if (!result.user.emailVerified) {
-      await signOut(auth);
-      alert("メール確認してね📩");
-      return;
-    }
-    location.href = "home.html";
-  } catch {
-    alert("ログイン失敗");
+function register() {
+  const u = username.value.trim();
+  const p = password.value.trim();
+  if (!u || !p) return msg.textContent = "入力してね";
+
+  if (localStorage.getItem("user_"+u)) {
+    msg.textContent = "その名前もう使われてる";
+    return;
   }
-};
+
+  localStorage.setItem("user_"+u, p);
+  alert("登録できた！ログインしてね");
+}
+
+function login() {
+  const u = username.value.trim();
+  const p = password.value.trim();
+  const saved = localStorage.getItem("user_"+u);
+
+  if (saved !== p) {
+    msg.textContent = "名前かパスが違う";
+    return;
+  }
+
+  localStorage.setItem("loginUser", u);
+  localStorage.setItem("loginTime", Date.now());
+  location.href = "home.html";
+}
 </script>
 </body>
-<button type="button" onclick="login()">ログイン</button>
-<button type="button" onclick="register()">登録</button>
-function login() {
-  alert("login() は呼ばれてるよ");
-  ...
-}
 </html>
