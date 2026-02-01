@@ -1,102 +1,45 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>OMS ログイン</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body {
-  font-family: system-ui, -apple-system;
-  background: linear-gradient(135deg,#ffd1dc,#c1e1ff);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-.box {
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 360px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.15);
-}
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-input {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  margin-bottom: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-button {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 8px;
-}
-.login { background:#6c9cff; color:white; }
-.register { background:#ff9eb5; color:white; }
-.msg {
-  text-align:center;
-  margin-top:10px;
-  color:red;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>ログイン - 0208オフ会 サイト</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-<div class="box">
-  <h1>OMS</h1>
+    <div class="container">
+        <h1>Login ☆</h1>
+        <form id="loginForm">
+            <input type="text" id="loginUser" placeholder="ユーザーネーム" autocomplete="username" required>
+            <input type="password" id="loginPass" placeholder="パスワード" autocomplete="current-password" required>
+            <button type="submit">ログイン</button>
+        </form>
+        
+        <a href="#" onclick="resetPassword()">パスワードを忘れた場合</a>
+        <a href="signup.html" style="color:#888;">新規ユーザー登録はこちら</a>
+    </div>
 
-  <input id="username" placeholder="ユーザーネーム">
-  <input id="password" type="password" placeholder="パスワード">
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
 
-  <button class="login" type="button" onclick="login()">ログイン</button>
-  <button class="register" type="button" onclick="register()">新規登録</button>
+            // 管理者判別
+            if(user === "admin" && pass === "Admin123") {
+                window.location.href = 'admin.html';
+            } else {
+                // 一般ユーザー（簡易チェック）
+                localStorage.setItem('currentUser', user);
+                window.location.href = 'home.html';
+            }
+        };
 
-  <div class="msg" id="msg"></div>
-</div>
-
-<script>
-const LIMIT = 30 * 60 * 1000; // 30分
-
-function register() {
-  const u = username.value.trim();
-  const p = password.value.trim();
-  if (!u || !p) return msg.textContent = "入力してね";
-
-  if (localStorage.getItem("user_"+u)) {
-    msg.textContent = "その名前もう使われてる";
-    return;
-  }
-
-  localStorage.setItem("user_"+u, p);
-  alert("登録できた！ログインしてね");
-}
-
-function login() {
-  const u = username.value.trim();
-  const p = password.value.trim();
-  const saved = localStorage.getItem("user_"+u);
-
-  if (saved !== p) {
-    msg.textContent = "名前かパスが違う";
-    return;
-  }
-
-  localStorage.setItem("loginUser", u);
-  localStorage.setItem("loginTime", Date.now());
-  location.href = "home.html";
-}
-</script>
+        function resetPassword() {
+            const email = prompt("登録したGmailアドレスを入力してください。");
+            if(email) {
+                alert(email + " 宛に再設定リンクを送信しました。\n再設定後、再度この画面からログインしてください。");
+            }
+        }
+    </script>
 </body>
 </html>
