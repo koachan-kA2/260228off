@@ -1,22 +1,93 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>OMS HOME</title>
+<meta charset="UTF-8">
+<title>OMS HOME 🌟</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Rounded+M+plus+1c:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Rounded M plus 1c', sans-serif;
+    background: linear-gradient(135deg, #fce4ec, #e0f7fa);
+    color: #444;
+    text-align: center;
+    padding-top: 60px;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    color: #ff6f91;
+    margin-bottom: 1rem;
+  }
+
+  .welcome {
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+    color: #555;
+  }
+
+  .nav-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 80%;
+    max-width: 320px;
+    margin: 0 auto 40px auto;
+  }
+
+  .nav-buttons a {
+    display: block;
+    padding: 14px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    background: #ffadc6;
+    color: white;
+    border-radius: 12px;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .nav-buttons a:hover {
+    transform: translateY(-3px);
+    background: #ff85a2;
+  }
+
+  .logout {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #ff4d6d;
+    cursor: pointer;
+  }
+</style>
 </head>
+
 <body>
 
-<h1>OMS HOME</h1>
-<p>ようこそ <span id="userEmail"></span> さん</p>
+  <h1>OMSへようこそ 🐰💗</h1>
+  <p class="welcome">ようこそ <b id="usernameDisplay">さん</b></p>
 
-<ul>
-  <li><a href="route.html">経路検索</a></li>
-  <li><a href="mypage.html">マイページ</a></li>
-  <li><a href="square.html">みんなの広場</a></li>
-</ul>
+  <div class="nav-buttons">
+    <a href="route.html">🚃 経路検索</a>
+    <a href="mypage.html">👤 マイページ</a>
+    <a href="square.html">💬 みんなの広場</a>
+  </div>
 
-<button id="logoutBtn">ログアウト</button>
+  <div class="logout" onclick="logout()">🔒 ログアウト</div>
 
-<script type="module" src="home.js"></script>
+  <script>
+    // ログインユーザー名を localStorage から取得
+    const user = localStorage.getItem("loginUser") || "ゲスト";
+    document.getElementById("usernameDisplay").textContent = user;
+
+    function logout() {
+      localStorage.clear();
+      location.href = "login.html";
+    }
+  </script>
+
 </body>
 </html>
