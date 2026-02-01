@@ -2,19 +2,35 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up - かみさまの場所</title>
+    <title>新規登録 - 0208オフ会 サイト</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h2>Sign Up ☆</h2>
-        <form>
-            <input type="text" placeholder="おなまえ" required>
-            <input type="email" placeholder="メールアドレス" required>
-            <input type="password" placeholder="パスワード" required>
+        <h1>Sign Up ♡</h1>
+        <p class="info-text">※絵文字・ニックネーム使用OK！</p>
+        <form id="signupForm">
+            <input type="text" id="username" placeholder="ユーザーネーム" required>
+            
+            <input type="password" id="password" placeholder="パスワード" 
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{4,6}" 
+                   title="4〜6文字、英大文字・小文字・数字をすべて含めてください" required>
+            <p class="info-text">英数字の大文字・小文字必須（4〜6文字）</p>
+            
             <button type="submit">登録する</button>
         </form>
-        <a href="login.html">ログイン画面へもどる</a>
+        <a href="login.html">すでにアカウントをお持ちの方</a>
     </div>
+
+    <script>
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            // 本来はサーバーに保存しますが、ここではlocalStorageを使用
+            localStorage.setItem('savedUser', document.getElementById('username').value);
+            localStorage.setItem('savedPass', document.getElementById('password').value);
+            alert("登録完了！ログイン画面へ進みます。");
+            window.location.href = 'login.html';
+        };
+    </script>
 </body>
 </html>
