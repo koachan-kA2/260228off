@@ -1,76 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>OMS HOME</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body {
-  font-family: system-ui;
-  background:#f6f7ff;
-  margin:0;
-}
-header {
-  background:#6c9cff;
-  color:white;
-  padding:16px;
-  font-size:20px;
-}
-main {
-  padding:20px;
-}
-.card {
-  background:white;
-  padding:16px;
-  border-radius:14px;
-  margin-bottom:14px;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
-button {
-  width:100%;
-  padding:14px;
-  font-size:16px;
-  border:none;
-  border-radius:10px;
-  background:#ff9eb5;
-  color:white;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>2026-0228オフ会サイト</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
+        .full-width { grid-column: span 2; }
+    </style>
 </head>
-
 <body>
-<header>OMS HOME</header>
+    <div class="container" style="width: 450px;">
+        <h2>2026-0228オフ会サイト</h2>
+        <p>こんにちは、<span id="display-name" style="font-weight:bold;">ユーザー</span>さん！</p>
+        
+        <div class="menu-grid">
+            <button onclick="location.href='route.html'" class="full-width">🔍 経路検索へ</button>
+            <button onclick="location.href='mypage.html'" class="nav-btn">👤 個人ページ</button>
+            <button onclick="location.href='itinerary.html'" class="nav-btn">📅 行程一覧</button>
+            <button onclick="location.href='chat.html'" class="full-width" style="background:#b19cd9;">💬 管理者と1on1チャット</button>
+        </div>
 
-<main>
-  <div class="card">
-    ようこそ <b id="name"></b> さん
-  </div>
+        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
+            <button onclick="location.href='login.html'" style="background:#ccc; width: auto; font-size: 12px;">ログアウト</button>
+        </div>
+    </div>
 
-  <div class="card">🚃 経路検索</div>
-  <div class="card">👤 マイページ</div>
-  <div class="card">💬 みんなの広場</div>
-
-  <button onclick="logout()">ログアウト</button>
-</main>
-
-<script>
-const LIMIT = 30 * 60 * 1000;
-
-const user = localStorage.getItem("loginUser");
-const time = localStorage.getItem("loginTime");
-
-if (!user || Date.now() - time > LIMIT) {
-  localStorage.clear();
-  location.href = "login.html";
-}
-
-name.textContent = user;
-
-function logout() {
-  localStorage.clear();
-  location.href = "login.html";
-}
-</script>
+    <script>
+        document.getElementById('display-name').innerText = localStorage.getItem('currentUser') || 'ゲスト';
+    </script>
 </body>
 </html>
